@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html><html lang="ko"><head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>KHIDI QnA Board</title>
@@ -6,12 +6,19 @@
 </head><body>
 
 <header>
-  <img src="assets/logo.webp" alt="KHIDI 워크숍" class="logo" />
+  <img src="assets/logo.svg" alt="KHIDI 워크숍" class="logo" />
   <select id="selSession"></select>
-  <h1><span id="sessionTitle">합성신약 일반</span> QnA Board</h1>
+  <h1 id="sessionTitle">합성신약 일반 QnA Board</h1>
 </header>
 
 <main id="app"><!-- JS가 채움 --></main>
+
+<!-- 질문 입력 -->
+<section id="formWrap">
+  <input id="inpName" placeholder="이름을 입력하세요(선택)" />
+  <textarea id="inpQ" rows="4" placeholder="질문 내용을 입력하세요(필수)"></textarea>
+  <button class="submit" id="btnAdd">질문 등록</button>
+</section>
 
 <script src="app.js"></script>
 </body></html>
