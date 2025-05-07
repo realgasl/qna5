@@ -9,13 +9,13 @@ const sessions = {
       name :"김무성 상무", org:"CMG제약",
       topic:"유전독성(ICH M7) 불순물 관리/허가 전략",
       time :"10:30 - 11:00",
-      photo:"assets/spk_kim.webp"
+      photo:"https://realgasl.github.io/assets/speaker-01.webp"
     },
     "Lecture B":{
       name :"이용문 교수", org:"충북대 약대",
       topic:"의약품 중 신규 N‑Nitrosamines의 통합 관리전략",
       time :"11:00 - 11:30",
-      photo:"assets/spk_lee.webp"
+      photo:"https://realgasl.github.io/assets/speaker-02.webp"
     }
   },
   "Session 2":{
