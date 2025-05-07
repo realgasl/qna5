@@ -1,0 +1,40 @@
+:root{
+  --violet:#26226c;
+  --bg:#eef0f8;
+  --brand:#f7ce00;
+  --card:#ffffff;
+  --shadow:0 2px 6px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;font-family:'Pretendard','Noto Sans KR',sans-serif;}
+body{margin:0;background:var(--bg);color:#111;}
+
+header{max-width:920px;margin:0 auto;padding:24px 16px;display:flex;
+  align-items:center;gap:12px;}
+header .logo{height:48px}
+h1{font-size:20px;margin:0 auto 0 0;white-space:nowrap}
+
+select{padding:6px 10px;border:1px solid #ccc;border-radius:4px;}
+
+#app{max-width:920px;margin:0 auto;padding:0 16px 64px;}
+
+.speaker{display:flex;padding:24px;border-radius:16px;color:#fff;margin-bottom:16px}
+.speaker.disabled{opacity:.4;filter:grayscale(1)}
+.speaker .photo{width:80px;height:80px;border-radius:50%;overflow:hidden;margin-right:16px}
+.speaker h3{margin:0;font-size:18px}
+.speaker .time{font-size:13px;margin-top:4px}
+
+.qcard{display:flex;padding:20px;margin:8px 0;border-radius:12px;
+  background:var(--card);box-shadow:var(--shadow);align-items:flex-start}
+.qcard .heart{width:48px;text-align:center;font-size:24px;cursor:pointer;color:#bfbfbf}
+.qcard .heart.liked{color:#e21b3c}
+.qcard .body{flex:1}
+.qcard .tools{display:flex;gap:12px}
+.qcard .tools svg{cursor:pointer;opacity:.6}
+
+textarea,input{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;font-size:15px;margin:6px 0}
+button.submit{width:160px;padding:12px;border:none;border-radius:8px;background:var(--violet);color:#fff;font-size:15px;cursor:pointer}
+
+@media(max-width:640px){
+  header{flex-direction:column;align-items:flex-start}
+  h1{margin:12px 0 0 0}
+}
