@@ -44,12 +44,14 @@ function fetchJSON(url){ return fetch(url).then(r=>r.json()); }
 
 /* ====== 초기 렌더 ====== */
 renderSpeakers();
+renderSubTitle();
 load();
 
 /* ── 세션 드롭다운 ── */
 qs('#sessionSel').onchange = e=>{
   curSession = e.target.value;
   curLecture = speakerData[curSession][0].id;
+  renderSubTitle(); 
   renderSpeakers();
   load();
 };
