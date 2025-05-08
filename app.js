@@ -1,149 +1,167 @@
-/* ===== 설정 ===== */
-const API = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec';   // ← ★ 배포 URL
-const POLL = 15000;
-
-/* ===== 세션 & 스피커 ===== */
-const sessions = {
-  "Session 1":{
-    "Lecture A":{
-      name:"김무성 상무",org:"CMG제약",topic:"유전독성(ICH M7)…",time:"10:30 - 11:00",photo:"assets/speaker-01.webp"},
-    "Lecture B":{
-      name:"이용문 교수",org:"충북대 약대",topic:"신규 N-Nitrosamines 관리전략",time:"11:00 - 11:30",photo:"assets/speaker-02.webp"}
-  },
-  "Session 2":{/* 이후 추가 */}
+/* ====== 설정 ====== */
+const API = 'https://script.google.com/macros/s/AKfycb………………………/exec';  // ← 본인 URL
+const speakerData = {
+  'Session 1': [
+    { id:'Lecture A', img:'speaker-01.webp', name:'김무성 상무', org:'CMG제약',
+      time:'10:30 - 11:00', title:'유전독성(ICH M7) 불순물 관리/허가 전략' },
+    { id:'Lecture B', img:'speaker-02.webp', name:'이용문 교수', org:'충북대 약대',
+      time:'11:00 - 11:30', title:'신규 N-Nitrosamines 관리전략' }
+  ],
+  'Session 2': [
+    { id:'Lecture C', img:'speaker-03.webp', name:'박찬수 이사', org:'퓨처켐',
+      time:'13:00 - 13:30', title:'방사성의약품 개발 시 CMC 주요 고려사항' },
+    { id:'Lecture D', img:'speaker-04.webp', name:'최희경 상무', org:'지투지바이오',
+      time:'13:30 - 14:00', title:'합성펩타이드 의약품 연구개발 관련 CMC 고려사항' }
+  ]
 };
 
-/* ===== 상태 ===== */
-let curSession="Session 1", curLecture="Lecture A";
-const LS_MYQ='myQ', LS_MYLIKE='myLike';
-let myQ=JSON.parse(localStorage.getItem(LS_MYQ)||'[]');
-let myLike=JSON.parse(localStorage.getItem(LS_MYLIKE)||'[]');
+/* ====== 상태 ====== */
+let curSession = 'Session 1';
+let curLecture = 'Lecture A';
+let myLikes = JSON.parse(localStorage.getItem('likes')||'[]');
+let myEdits = JSON.parse(localStorage.getItem('myq')||'[]');
 
-/* ===== 초기화 ===== */
-document.addEventListener('DOMContentLoaded',init);
+/* ====== DOM ====== */
+const speakerWrap = qs('#speakerWrap');
+const qList       = qs('#qList');
+const emptyMsg    = qs('#emptyMsg');
+const nameInp     = qs('#nameInp');
+const qInp        = qs('#qInp');
 
-async function init(){
-  await loadConfig();
-  buildSessionSel();
-  buildSpeakers();
-  poll(); setInterval(poll,POLL);
-  document.getElementById('btnAdd').onclick=addQuestion;
-  document.getElementById('btnCancel').onclick=()=>modal.style.display='none';
-  document.getElementById('btnOk').onclick=submitReply;
-}
+/* ===== util ===== */
+function qs(s, p=document){ return p.querySelector(s); }
+function qsa(s,p=document){ return [...p.querySelectorAll(s)]; }
+function fetchJSON(url){ return fetch(url).then(r=>r.json()); }
 
-/* ----- Config 시트 ----- */
-async function loadConfig(){
-  try{
-    const cfg=await fetch(`${API}?action=config`).then(r=>r.json());
-    if(cfg.currentSession && sessions[cfg.currentSession]) curSession=cfg.currentSession;
-  }catch(e){console.warn('Config 실패',e);}
-}
+/* ====== 초기 렌더 ====== */
+renderSpeakers();
+load();
 
-/* ----- 세션 드롭다운 ----- */
-const sel=document.getElementById('selSession');
-function buildSessionSel(){
-  sel.innerHTML='';
-  Object.keys(sessions).forEach(s=>{
-    const o=document.createElement('option');o.value=o.textContent=s;
-    if(s===curSession) o.selected=true; sel.appendChild(o);
+/* ── 세션 드롭다운 ── */
+qs('#sessionSel').onchange = e=>{
+  curSession = e.target.value;
+  curLecture = speakerData[curSession][0].id;
+  renderSpeakers();
+  load();
+};
+
+/* ── 질문 등록 ── */
+qs('#addBtn').onclick = ()=>{
+  const q=qInp.value.trim(); if(!q){alert('질문을 입력하세요');return;}
+  qs('#addBtn').textContent='등록 중…';qs('#addBtn').disabled=true;
+  const url=`${API}?action=add&session=${encodeURIComponent(curSession)}&lecture=${encodeURIComponent(curLecture)}&name=${encodeURIComponent(nameInp.value)}&q=${encodeURIComponent(q)}`;
+  fetchJSON(url).then(r=>{
+    qInp.value='';qs('#addBtn').textContent='질문 등록';qs('#addBtn').disabled=false;load();
   });
-  sel.onchange=()=>{curSession=sel.value;buildSpeakers();}
+};
+
+/* ── 목록 로드 ── */
+function load(){
+  const url=`${API}?action=list&session=${encodeURIComponent(curSession)}&lecture=${encodeURIComponent(curLecture)}`;
+  fetchJSON(url).then(renderList);
 }
 
-/* ----- 스피커 카드 ----- */
-const app=document.getElementById('app');
-function buildSpeakers(){
-  app.innerHTML=''; const lecObj=sessions[curSession];
-  Object.entries(lecObj).forEach(([key,sp],i)=>{
+/* ── 질문 리스트 렌더 ── */
+function renderList(arr){
+  qList.innerHTML='';
+  emptyMsg.hidden = arr.length>0;
+  arr.forEach(o=>{
+    const li=document.createElement('li');li.className='question';
+    li.innerHTML=`
+      <div class="heart" data-id="${o.id}">
+        <img src="assets/${myLikes.includes(o.id)?'heart-on':'heart-off'}.svg">
+        <span>${o.like}</span>
+      </div>
+      <div class="body">
+        <p class="q-name">${o.name||'(익명)'}</p>
+        <p class="q-text">${o.q}</p>
+        ${o.reply?`<div class="reply">${o.reply}</div>`:''}
+      </div>
+      ${myEdits.includes(o.id)?
+        `<div class="btns">
+           <img src="assets/icon-edit.svg"   class="edit" data-id="${o.id}">
+           <img src="assets/icon-delete.svg" class="del"  data-id="${o.id}">
+         </div>`:''
+      }`;
+    qList.append(li);
+  });
+
+  /* 좋아요 */
+  qsa('.heart',qList).forEach(h=>{
+    h.onclick = ()=>{
+      const id=h.dataset.id, liked=myLikes.includes(id);
+      const url=`${API}?action=setLike&id=${id}&delta=${liked?-1:1}`;
+      fetchJSON(url).then(r=>{
+        h.querySelector('span').textContent=r.like;
+        h.querySelector('img').src=`assets/${liked?'heart-off':'heart-on'}.svg`;
+        if(liked) myLikes=myLikes.filter(v=>v!==id); else myLikes.push(id);
+        localStorage.setItem('likes',JSON.stringify(myLikes));
+      });
+    };
+  });
+
+  /* 수정 / 삭제 */
+  qsa('.edit',qList).forEach(btn=>btn.onclick=()=>openModal('질문 수정',btn.dataset.id));
+  qsa('.del',qList).forEach(btn=>delQ(btn.dataset.id));
+}
+
+/* ── 스피커 카드 렌더 ── */
+function renderSpeakers(){
+  speakerWrap.innerHTML='';
+  speakerData[curSession].forEach(sp=>{
     const div=document.createElement('div');
-    div.className='speaker'+(i?' disabled':'');
-    if(!i) curLecture=key;
+    div.className='speaker'+(sp.id===curLecture?' active':'');
     div.innerHTML=`
-      <img src="${sp.photo}" class="photo">
-      <div><h3>${sp.name}</h3><p>${sp.org}</p></div>
-      <div style="margin-left:auto;border-left:1px solid rgba(255,255,255,.4);padding-left:16px">
-        <div class="time">${sp.time}</div><div class="topic">${sp.topic}</div>
+      <img src="assets/${sp.img}">
+      <div class="info">
+        <p class="name">${sp.name}</p>
+        <p class="org">${sp.org}</p>
+      </div>
+      <div class="info">
+        <p class="time">${sp.time}</p>
+        <p class="title">${sp.title}</p>
       </div>`;
-    if(i){div.onclick=()=>{curLecture=key;document.querySelectorAll('.speaker').forEach(x=>x.classList.add('disabled'));div.classList.remove('disabled');poll(true);}};
-    app.appendChild(div);
+    div.onclick=()=>{
+      curLecture=sp.id;
+      renderSpeakers();
+      load();
+    };
+    speakerWrap.append(div);
   });
-  app.appendChild(document.createElement('div')).id='qWrap';
 }
 
-/* ----- 질문 목록 ----- */
-async function poll(force){
-  try{
-    const res=await fetch(`${API}?action=list&session=${enc(curSession)}&lecture=${enc(curLecture)}`);
-    const list=await res.json(); render(list);
-  }catch(e){if(force) alert('질문 불러오기 실패');}
-}
-function render(list){
-  const w=document.getElementById('qWrap');w.innerHTML='';
-  list.forEach(o=>{
-    const mine=myQ.includes(o.id), liked=myLike.includes(o.id);
-    const c=document.createElement('div');c.className='qcard';c.dataset.id=o.id;
-    c.innerHTML=`
-      <div class="heart ${liked?'liked':''}"><img src="assets/${liked?'heart-on.svg':'heart-off.svg'}"><div>${o.like}</div></div>
-      <div class="body"><b>${o.name||'익명'}</b><br>${o.q}</div>
-      ${mine?`<div class="tools">
-        <img src="assets/icon-edit.svg"  data-act="edit">
-        <img src="assets/icon-delete.svg" data-act="del">
-      </div>`:''}`;
-    w.appendChild(c);
-  });
-  w.onclick=e=>{
-    const h=e.target.closest('.heart'); if(h) toggleLike(h);
-    const t=e.target.closest('.tools img'); if(t){
-      const id=t.closest('.qcard').dataset.id;
-      t.dataset.act==='del'? delQ(id): openReply(id);
-    }
+/* ── 삭제 ── */
+function delQ(id){
+  return ()=>{
+    if(!confirm('삭제하시겠습니까?')) return;
+    fetchJSON(`${API}?action=delete&id=${id}`).then(()=>load());
   };
 }
 
-/* ----- 좋아요 ----- */
-function toggleLike(h){
-  const id=h.closest('.qcard').dataset.id, liked=h.classList.contains('liked');
-  h.classList.toggle('liked');
-  h.querySelector('img').src='assets/'+(liked?'heart-off.svg':'heart-on.svg');
-  const cnt=h.querySelector('div:nth-child(2)');
-  cnt.textContent=+cnt.textContent+(liked?-1:1);
-  liked? myLike=myLike.filter(x=>x!==id): myLike.push(id);
-  localStorage.setItem(LS_MYLIKE,JSON.stringify(myLike));
-  fetch(`${API}?action=setlike&id=${id}&delta=${liked?-1:1}`);
+/* ── 모달 편집·답변 ── */
+let mId='', isReply=false;
+function openModal(tit,id){
+  mId=id; isReply=false;
+  qs('#modalTit').textContent=tit;
+  qs('#modalTxt').value=qsa(`[data-id="${id}"]`,qList.closest('.q-list'))[0]
+                   .closest('.question').querySelector('.q-text').textContent.trim();
+  showModal();
 }
-
-/* ----- 질문 추가 ----- */
-async function addQuestion(){
-  const n=document.getElementById('inpName').value.trim();
-  const q=document.getElementById('inpQ').value.trim();
-  if(!q){alert('질문 내용을 입력');return;}
-  btnAdd.disabled=true;btnAdd.textContent='등록 중…';
-  const r=await fetch(`${API}?action=add&session=${enc(curSession)}&lecture=${enc(curLecture)}&name=${enc(n)}&q=${enc(q)}`).then(r=>r.json());
-  myQ.push(r.id);localStorage.setItem(LS_MYQ,JSON.stringify(myQ));
-  btnAdd.disabled=false;btnAdd.textContent='질문 등록';document.getElementById('inpQ').value='';
-  poll(true);
-}
-
-/* ----- 답변 모달 ----- */
-let targetId='';
-const modal=document.getElementById('modal');
+/* 답변 모드 (관리자만 호출) */
 function openReply(id){
-  targetId=id; modal.style.display='flex';
-  document.getElementById('replyText').value='';
-}
-async function submitReply(){
-  const txt=document.getElementById('replyText').value.trim();
-  if(!txt){alert('답변을 입력');return;}
-  await fetch(`${API}?action=reply&id=${targetId}&text=${enc(txt)}`);
-  modal.style.display='none'; poll(true);
+  mId=id; isReply=true;
+  qs('#modalTit').textContent='답변 작성';
+  qs('#modalTxt').value='';
+  showModal();
 }
 
-/* ----- 삭제 ----- */
-async function delQ(id){
-  if(!confirm('삭제하시겠습니까?'))return;
-  await fetch(`${API}?action=delete&id=${id}`); poll(true);
-}
+function showModal(){ qs('#modalDim').hidden=qs('#modalBox').hidden=false; }
+function closeModal(){ qs('#modalDim').hidden=qs('#modalBox').hidden=true; }
 
-/* util */
-function enc(s){return encodeURIComponent(s);}
+qs('#mCancel').onclick=closeModal;
+qs('#mOk').onclick=()=>{
+  const txt=qs('#modalTxt').value.trim(); if(!txt){alert('내용을 입력');return;}
+  const act=isReply?'reply':'edit';
+  fetchJSON(`${API}?action=${act}&id=${mId}&${isReply?'text':'q'}=${encodeURIComponent(txt)}`)
+    .then(()=>{closeModal();load();});
+};
