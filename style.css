@@ -3,7 +3,7 @@
 :root{--violet:#231f60;--violet-light:#6a6895;--prim:#1d1d1f;--gray:#9d9da3;--red:#d61c32;}
 
 /* Hero */
-.hero{position:relative;padding:48px 0 36px;background:url(assets/bg-top.webp) no-repeat center/cover;text-align:center;color:#fff;}
+.hero{position:relative;padding:48px 0 84px;background:url(assets/bg-top.webp) no-repeat center/cover;text-align:center;color:#fff;}
 .logo{width:140px;margin-bottom:12px;}
 .hero h1{margin:0;font-size:28px;font-weight:700;}
 
