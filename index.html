@@ -1,37 +1,53 @@
-<!DOCTYPE html><html lang="ko"><head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KHIDI QnA Board</title>
+<title>KHIDI CMC QnA</title>
 <link rel="stylesheet" href="style.css">
-</head><body>
+</head>
+<body>
 
+<!-- ───── Hero │ logo + background ───── -->
 <header class="hero">
-  <img src="assets/bg-top.webp" class="bg" alt="">
-  <div class="hero-inner">
-    <img src="assets/logo.svg" class="logo" alt="KHIDI">
-    <h1 id="sessionTitle">합성신약 CMC 워크숍 – QnA</h1>
-    <select id="selSession"></select>
-  </div>
+  <img src="assets/logo.svg" class="logo" alt="KHIDI 합성신약 CMC 워크숍">
+  <h1>합성신약 CMC 워크숍 – QnA</h1>
+
+  <!-- Session selector (드롭다운 화살표 한 개) -->
+  <label class="session-box">
+    <select id="sessionSel">
+      <option>Session 1</option>
+      <option>Session 2</option>
+    </select>
+    <img src="assets/icon-dropdown.svg" class="dd-ico" alt="">
+  </label>
 </header>
 
-<main id="app"><!-- JS 가 채움 --></main>
+<!-- ───── Speaker cards (lecture selector) ───── -->
+<section id="speakerWrap" class="speakers"></section>
 
-<section id="formWrap">
-  <input id="inpName" placeholder="이름(선택)">
-  <textarea id="inpQ" rows="4" placeholder="질문 내용을 입력하세요(필수)"></textarea>
-  <button id="btnAdd">질문 등록</button>
+<!-- ───── 질문 리스트 ───── -->
+<ul id="qList" class="q-list"></ul>
+<p id="emptyMsg" class="empty" hidden>등록된 질문이 없습니다.</p>
+
+<!-- ───── 질문 입력 ───── -->
+<section class="form-box">
+  <input id="nameInp"  placeholder="이름(선택)">
+  <textarea id="qInp"   placeholder="질문 내용을 입력하세요(필수)"></textarea>
+  <button id="addBtn">질문 등록</button>
 </section>
 
-<!-- 답변 모달 -->
-<div id="modal" class="modal">
-  <div class="modal-box">
-    <textarea id="replyText" placeholder="답변을 입력하세요"></textarea>
-    <div class="modal-btns">
-      <button id="btnCancel">취소</button>
-      <button id="btnOk">확인</button>
-    </div>
+<!-- ───── 모달(편집·답변) ───── -->
+<div id="modalDim"  class="dim"   hidden></div>
+<div id="modalBox"  class="modal" hidden>
+  <h3 id="modalTit"></h3>
+  <textarea id="modalTxt" rows="6"></textarea>
+  <div class="modal-btns">
+    <button id="mCancel">취소</button>
+    <button id="mOk"     class="prim">확인</button>
   </div>
 </div>
 
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>
