@@ -6,9 +6,9 @@ const POLL = 15000;
 const sessions = {
   "Session 1":{
     "Lecture A":{
-      name:"김무성 상무",org:"CMG제약",topic:"유전독성(ICH M7)…",time:"10:30 - 11:00",photo:"assets/spk_kim.webp"},
+      name:"김무성 상무",org:"CMG제약",topic:"유전독성(ICH M7)…",time:"10:30 - 11:00",photo:"assets/speaker-01.webp"},
     "Lecture B":{
-      name:"이용문 교수",org:"충북대 약대",topic:"신규 N-Nitrosamines 관리전략",time:"11:00 - 11:30",photo:"assets/spk_lee.webp"}
+      name:"이용문 교수",org:"충북대 약대",topic:"신규 N-Nitrosamines 관리전략",time:"11:00 - 11:30",photo:"assets/speaker-02.webp"}
   },
   "Session 2":{/* 이후 추가 */}
 };
