@@ -1,5 +1,5 @@
 /* ============ 설정 ============ */
-const API   = 'https://script.google.com/macros/s/---YOUR_ID---/exec'; // WebApp URL
+const API   = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec'; // WebApp URL
 const POLL  = 15000;                                   // 15초마다 갱신
 
 /* ------------ 세션 & 스피커 데이터 ----------- */
