@@ -1,24 +1,37 @@
 <!DOCTYPE html><html lang="ko"><head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KHIDI QnA Board</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
 </head><body>
 
-<header>
-  <img src="https://realgasl.github.io/assets/logo.svg" alt="KHIDI 워크숍" class="logo" />
-  <select id="selSession"></select>
-  <h1 id="sessionTitle">합성신약 일반 QnA Board</h1>
+<header class="hero">
+  <img src="assets/bg-top.webp" class="bg" alt="">
+  <div class="hero-inner">
+    <img src="assets/logo.svg" class="logo" alt="KHIDI">
+    <h1 id="sessionTitle">합성신약 CMC 워크숍 – QnA</h1>
+    <select id="selSession"></select>
+  </div>
 </header>
 
-<main id="app"><!-- JS가 채움 --></main>
+<main id="app"><!-- JS 가 채움 --></main>
 
-<!-- 질문 입력 -->
 <section id="formWrap">
-  <input id="inpName" placeholder="이름을 입력하세요(선택)" />
+  <input id="inpName" placeholder="이름(선택)">
   <textarea id="inpQ" rows="4" placeholder="질문 내용을 입력하세요(필수)"></textarea>
-  <button class="submit" id="btnAdd">질문 등록</button>
+  <button id="btnAdd">질문 등록</button>
 </section>
+
+<!-- 답변 모달 -->
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <textarea id="replyText" placeholder="답변을 입력하세요"></textarea>
+    <div class="modal-btns">
+      <button id="btnCancel">취소</button>
+      <button id="btnOk">확인</button>
+    </div>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body></html>
