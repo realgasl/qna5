@@ -1,163 +1,149 @@
-/* ============ 설정 ============ */
-const API   = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec'; // WebApp URL
-const POLL  = 15000;                                   // 15초마다 갱신
+/* ===== 설정 ===== */
+const API = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec';   // ← ★ 배포 URL
+const POLL = 15000;
 
-/* ------------ 세션 & 스피커 데이터 ----------- */
+/* ===== 세션 & 스피커 ===== */
 const sessions = {
   "Session 1":{
     "Lecture A":{
-      name :"김무성 상무", org:"CMG제약",
-      topic:"유전독성(ICH M7) 불순물 관리/허가 전략",
-      time :"10:30 - 11:00",
-      photo:"https://realgasl.github.io/assets/speaker-01.webp"
-    },
+      name:"김무성 상무",org:"CMG제약",topic:"유전독성(ICH M7)…",time:"10:30 - 11:00",photo:"assets/spk_kim.webp"},
     "Lecture B":{
-      name :"이용문 교수", org:"충북대 약대",
-      topic:"의약품 중 신규 N‑Nitrosamines의 통합 관리전략",
-      time :"11:00 - 11:30",
-      photo:"https://realgasl.github.io/assets/speaker-02.webp"
-    }
+      name:"이용문 교수",org:"충북대 약대",topic:"신규 N-Nitrosamines 관리전략",time:"11:00 - 11:30",photo:"assets/spk_lee.webp"}
   },
-  "Session 2":{
-    /* 오후 세션 정의 */
-  }
+  "Session 2":{/* 이후 추가 */}
 };
 
-/* ------------ 상태 ------------ */
-let curSession = "Session 1";
-let curLecture = "Lecture A";
-let myQ   = JSON.parse(localStorage.getItem('myQ')||'[]');
-let myLike= JSON.parse(localStorage.getItem('myLike')||'[]');
+/* ===== 상태 ===== */
+let curSession="Session 1", curLecture="Lecture A";
+const LS_MYQ='myQ', LS_MYLIKE='myLike';
+let myQ=JSON.parse(localStorage.getItem(LS_MYQ)||'[]');
+let myLike=JSON.parse(localStorage.getItem(LS_MYLIKE)||'[]');
 
-/* ------------ 초기화 ------------ */
+/* ===== 초기화 ===== */
 document.addEventListener('DOMContentLoaded',init);
 
 async function init(){
-  await loadConfig();              // Sheet Config 반영
-  buildSessionDropdown();
+  await loadConfig();
+  buildSessionSel();
   buildSpeakers();
-  poll();
-  setInterval(poll, POLL);
+  poll(); setInterval(poll,POLL);
+  document.getElementById('btnAdd').onclick=addQuestion;
+  document.getElementById('btnCancel').onclick=()=>modal.style.display='none';
+  document.getElementById('btnOk').onclick=submitReply;
 }
 
-/* ------------ Config (기본 세션) ----------- */
+/* ----- Config 시트 ----- */
 async function loadConfig(){
   try{
-    const cfg = await fetch(`${API}?action=config`).then(r=>r.json());
-    if(cfg.currentSession && sessions[cfg.currentSession]){
-      curSession = cfg.currentSession;
-    }
-  }catch(e){console.warn('CONFIG 실패',e);}
+    const cfg=await fetch(`${API}?action=config`).then(r=>r.json());
+    if(cfg.currentSession && sessions[cfg.currentSession]) curSession=cfg.currentSession;
+  }catch(e){console.warn('Config 실패',e);}
 }
 
-/* ------------ 세션 · 스피커 UI ----------- */
-const app        = document.getElementById('app');
-const selSession = document.getElementById('selSession');
-const sessionTit = document.getElementById('sessionTitle');
-
-function buildSessionDropdown(){
-  selSession.innerHTML='';
+/* ----- 세션 드롭다운 ----- */
+const sel=document.getElementById('selSession');
+function buildSessionSel(){
+  sel.innerHTML='';
   Object.keys(sessions).forEach(s=>{
     const o=document.createElement('option');o.value=o.textContent=s;
-    if(s===curSession) o.selected=true;
-    selSession.appendChild(o);
+    if(s===curSession) o.selected=true; sel.appendChild(o);
   });
-  selSession.onchange=()=>{curSession=selSession.value;buildSpeakers();}
+  sel.onchange=()=>{curSession=sel.value;buildSpeakers();}
 }
 
+/* ----- 스피커 카드 ----- */
+const app=document.getElementById('app');
 function buildSpeakers(){
-  app.innerHTML='';
-  const lectures=sessions[curSession], keys=Object.keys(lectures);
-  keys.forEach((k,i)=>{
-    const d=lectures[k], div=document.createElement('div');
-    div.className='speaker'+(i? ' disabled':'');
-    if(!i) curLecture=k;
+  app.innerHTML=''; const lecObj=sessions[curSession];
+  Object.entries(lecObj).forEach(([key,sp],i)=>{
+    const div=document.createElement('div');
+    div.className='speaker'+(i?' disabled':'');
+    if(!i) curLecture=key;
     div.innerHTML=`
-      <img src="${d.photo}" class="photo" />
-      <div>
-        <h3>${d.name}</h3><p>${d.org}</p>
-      </div>
-      <div style="margin-left:auto;border-left:1px solid rgba(255,255,255,.3);padding-left:16px">
-        <div class="time">${d.time}</div><div style="margin-top:6px">${d.topic}</div>
+      <img src="${sp.photo}" class="photo">
+      <div><h3>${sp.name}</h3><p>${sp.org}</p></div>
+      <div style="margin-left:auto;border-left:1px solid rgba(255,255,255,.4);padding-left:16px">
+        <div class="time">${sp.time}</div><div class="topic">${sp.topic}</div>
       </div>`;
-    if(i){
-      div.onclick=()=>{curLecture=k;document.querySelectorAll('.speaker').forEach(x=>x.classList.add('disabled'));div.classList.remove('disabled');poll(true);}
-    }
+    if(i){div.onclick=()=>{curLecture=key;document.querySelectorAll('.speaker').forEach(x=>x.classList.add('disabled'));div.classList.remove('disabled');poll(true);}};
     app.appendChild(div);
   });
   app.appendChild(document.createElement('div')).id='qWrap';
 }
 
-/* ------------ 질문 목록 ------------ */
+/* ----- 질문 목록 ----- */
 async function poll(force){
   try{
-    const res = await fetch(`${API}?action=list&session=${enc(curSession)}&lecture=${enc(curLecture)}`);
-    const list = await res.json();
-    render(list);
-  }catch(e){
-    if(force) alert('질문 불러오기 실패'); console.error(e);
-  }
+    const res=await fetch(`${API}?action=list&session=${enc(curSession)}&lecture=${enc(curLecture)}`);
+    const list=await res.json(); render(list);
+  }catch(e){if(force) alert('질문 불러오기 실패');}
 }
-
-function render(arr){
-  const wrap=document.getElementById('qWrap');wrap.innerHTML='';
-  arr.forEach(o=>{
+function render(list){
+  const w=document.getElementById('qWrap');w.innerHTML='';
+  list.forEach(o=>{
     const mine=myQ.includes(o.id), liked=myLike.includes(o.id);
-    const card=document.createElement('div');card.className='qcard';
-    card.innerHTML=`
-      <div class="heart ${liked?'liked':''}" data-id="${o.id}">
-        <div>${liked?'❤️':'🤍'}</div><div>${o.like}</div>
-      </div>
-      <div class="body"><b>${o.name}</b><br>${o.q}</div>
+    const c=document.createElement('div');c.className='qcard';c.dataset.id=o.id;
+    c.innerHTML=`
+      <div class="heart ${liked?'liked':''}"><img src="assets/${liked?'heart-on.svg':'heart-off.svg'}"><div>${o.like}</div></div>
+      <div class="body"><b>${o.name||'익명'}</b><br>${o.q}</div>
       ${mine?`<div class="tools">
-          <svg data-act="edit" data-id="${o.id}">✏️</svg>
-          <svg data-act="del"  data-id="${o.id}">❌</svg>
-        </div>`:''}`;
-    wrap.appendChild(card);
+        <img src="assets/icon-edit.svg"  data-act="edit">
+        <img src="assets/icon-delete.svg" data-act="del">
+      </div>`:''}`;
+    w.appendChild(c);
   });
-
-  /* 이벤트 */
-  wrap.onclick=e=>{
-    const h=e.target.closest('.heart');
-    if(h) likeToggle(h);
-    const t=e.target.closest('svg');
-    if(t){
-      t.dataset.act==='del'? delQ(t.dataset.id): editQ(t.dataset.id);
+  w.onclick=e=>{
+    const h=e.target.closest('.heart'); if(h) toggleLike(h);
+    const t=e.target.closest('.tools img'); if(t){
+      const id=t.closest('.qcard').dataset.id;
+      t.dataset.act==='del'? delQ(id): openReply(id);
     }
   };
 }
 
-/* ------------ CRUD & 좋아요 ------------ */
-async function likeToggle(h){
-  const id=h.dataset.id, liked=h.classList.contains('liked');
+/* ----- 좋아요 ----- */
+function toggleLike(h){
+  const id=h.closest('.qcard').dataset.id, liked=h.classList.contains('liked');
   h.classList.toggle('liked');
+  h.querySelector('img').src='assets/'+(liked?'heart-off.svg':'heart-on.svg');
   const cnt=h.querySelector('div:nth-child(2)');
-  cnt.textContent = liked? cnt.textContent-1 : +cnt.textContent+1;
-  if(liked)  myLike=myLike.filter(x=>x!==id);
-  else       myLike.push(id);
-  localStorage.setItem('myLike',JSON.stringify(myLike));
+  cnt.textContent=+cnt.textContent+(liked?-1:1);
+  liked? myLike=myLike.filter(x=>x!==id): myLike.push(id);
+  localStorage.setItem(LS_MYLIKE,JSON.stringify(myLike));
   fetch(`${API}?action=setlike&id=${id}&delta=${liked?-1:1}`);
 }
 
-async function addQ(name,q){
-  const r=await fetch(`${API}?action=add&session=${enc(curSession)}&lecture=${enc(curLecture)}&name=${enc(name)}&q=${enc(q)}`).then(r=>r.json());
-  myQ.push(r.id);localStorage.setItem('myQ',JSON.stringify(myQ));
+/* ----- 질문 추가 ----- */
+async function addQuestion(){
+  const n=document.getElementById('inpName').value.trim();
+  const q=document.getElementById('inpQ').value.trim();
+  if(!q){alert('질문 내용을 입력');return;}
+  btnAdd.disabled=true;btnAdd.textContent='등록 중…';
+  const r=await fetch(`${API}?action=add&session=${enc(curSession)}&lecture=${enc(curLecture)}&name=${enc(n)}&q=${enc(q)}`).then(r=>r.json());
+  myQ.push(r.id);localStorage.setItem(LS_MYQ,JSON.stringify(myQ));
+  btnAdd.disabled=false;btnAdd.textContent='질문 등록';document.getElementById('inpQ').value='';
   poll(true);
 }
-async function editQ(id){/* 모달 – 이전 코드 재사용 */}
-async function delQ(id){/* 모달 + 삭제 */}
 
-/* ------------ 입력 폼 ------------ */
-const inpName=document.getElementById('inpName');
-const inpQ   =document.getElementById('inpQ');
-const btnAdd =document.getElementById('btnAdd');
-btnAdd.onclick=async()=>{
-  const name=inpName.value.trim(), q=inpQ.value.trim();
-  if(!q){alert('질문 입력!');return;}
-  btnAdd.disabled=true;btnAdd.textContent='등록 중…';
-  await addQ(name,q);
-  inpQ.value='';btnAdd.disabled=false;btnAdd.textContent='질문 등록';
-};
+/* ----- 답변 모달 ----- */
+let targetId='';
+const modal=document.getElementById('modal');
+function openReply(id){
+  targetId=id; modal.style.display='flex';
+  document.getElementById('replyText').value='';
+}
+async function submitReply(){
+  const txt=document.getElementById('replyText').value.trim();
+  if(!txt){alert('답변을 입력');return;}
+  await fetch(`${API}?action=reply&id=${targetId}&text=${enc(txt)}`);
+  modal.style.display='none'; poll(true);
+}
+
+/* ----- 삭제 ----- */
+async function delQ(id){
+  if(!confirm('삭제하시겠습니까?'))return;
+  await fetch(`${API}?action=delete&id=${id}`); poll(true);
+}
 
 /* util */
 function enc(s){return encodeURIComponent(s);}
