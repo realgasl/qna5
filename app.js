@@ -15,6 +15,15 @@ const speakerData = {
   ]
 };
 
+/* ===== Session 타이틀 ===== */
+const sessionTitle = {
+  'Session 1': '합성신약 일반 QnA',
+  'Session 2': '방사성의약품 / 합성 펩타이드 치료제 QnA'
+};
+function renderSubTitle(){
+  qs('#subTitle').textContent = sessionTitle[curSession] || '';
+}
+
 /* ====== 상태 ====== */
 let curSession = 'Session 1';
 let curLecture = 'Lecture A';
