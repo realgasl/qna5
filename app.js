@@ -87,6 +87,7 @@ function speakerClick(id, card){
   curLecture=id;
   [...EL.speakerWrap.children].forEach(c=>c.classList.toggle('inactive',c!==card));
   firstLoad();
+  lastServerTime = 0;
 }
 
 /*──────────────────────────────────────────
