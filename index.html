@@ -1,43 +1,42 @@
-<!DOCTYPE html>
-<html lang="ko">
+<!DOCTYPE html><html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Q&A Board</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <title>KHIDI CMC QnA</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="hero">
+    <img class="logo" src="assets/logo.svg"  alt="KHIDI">
+    <h1>합성신약 CMC 워크숍 – QnA</h1>
 
-<header class="hero">
-  <img src="assets/logo.svg" alt="logo" class="logo">
-  <h1>합성신약 CMC 워크숍 – QnA</h1>
-  <select id="sessionSel" class="sel"></select>
-  <h2 id="sectionTitle" class="section-title"></h2>
-</header>
+    <select id="sessionSel"></select>
+    <h2 id="sectionTitle"></h2>
+  </header>
 
-<section id="speakerWrap" class="speaker-wrap"></section>
-<section id="qList"      class="q-list"></section>
+  <main>
+    <section id="speakerWrap" class="speaker-wrap"></section>
 
-<div class="ask-box">
-  <input  id="inpName" class="inp" placeholder="이름(선택)">
-  <textarea id="inpQ"   class="inp" placeholder="질문 내용을 입력하세요(필수)"></textarea>
-  <button  id="btnSubmit" class="btn">질문 등록</button>
-</div>
+    <div id="qList" class="q-list"></div>
 
-<!-- modal -->
-<div id="modalBack" class="modal-back">
-  <div id="modal" class="modal">
-    <textarea id="mTextarea" placeholder=""></textarea>
-    <div class="modal-btns">
-      <button id="mCancel" class="btn light">취소</button>
-      <button id="mOk"     class="btn">확인</button>
+    <div class="q-input">
+      <input id="inpName" class="inp" placeholder="이름(선택)">
+      <textarea id="inpQ"   class="inp" rows="4" placeholder="질문 내용을 입력하세요(필수)"></textarea>
+      <button id="btnSubmit" class="btn">질문 등록</button>
+    </div>
+  </main>
+
+  <!-- ───── 모달 ───── -->
+  <div id="modalBack" class="modal-back">
+    <div id="modal" class="modal">
+      <textarea id="mTextarea" rows="6" placeholder=""></textarea>
+      <div class="modal-btns">
+        <button id="mCancel" class="btn ghost">취소</button>
+        <button id="mOk"     class="btn">확인</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="app.js"></script>
-
-  <br><!-- 로딩 오버레이 --> <div id="pageLoader"><div class="spinner"></div></div>
-
+  <script src="app.js"></script>
 </body>
 </html>
