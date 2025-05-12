@@ -130,9 +130,6 @@ function renderQCard(item){
     </div>
   `;
 
-  // …(나머지 이벤트 바인딩 동일)
-}
-
   /* 이벤트 연결 */
   li.querySelector('.q-heart').onclick = ()=>toggleLike(li.querySelector('.q-heart'));
   if(own){
