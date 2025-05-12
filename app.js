@@ -1,5 +1,5 @@
 /*──────────────────  app.js  ──────────────────*/
-const API_URL = '★YOUR_EXEC_URL★';   // 예: https://script.google.com/macros/s/AKfyc.../exec
+const API_URL = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec';   // 예: https://script.google.com/macros/s/AKfyc.../exec
 
 /* ------- DOM ------- */
 const $ = s => document.querySelector(s);
