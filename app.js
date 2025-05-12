@@ -195,6 +195,112 @@ EL.sessionSel.addEventListener('change',()=>{
   renderSpeakers();
 });
 
+/* ---------- 전역 / 초기화 위쪽에 추가 ---------- */
+let autoTimer = null;            // 자동 리로드용
+const POLL_MS = 8000;            // 8초마다
+
+/* === ❺ Config 시트에서 기본 Session 읽기 ============== */
+function fetchConfig(){
+  return api({action:'config'}).then(cfg=>{
+    if(cfg.currentSession && speakers[cfg.currentSession]){
+      curSession = cfg.currentSession;
+    }
+  });
+}
+
+/* ---------- init() 안쪽 : 타이틀 세팅 이전에 ------------ */
+function init(){
+  fetchConfig().finally(()=>{     // ← config 받든 말든 이어감
+    buildSessionSelect();         // 기존 코드 분리
+    renderSpeakers();
+    startAutoRefresh();
+  });
+}
+
+function buildSessionSelect(){
+  Object.keys(sessionTitles).forEach(s=>{
+    const opt=document.createElement('option');
+    opt.textContent=s;opt.value=s;EL.sessionSel.appendChild(opt);
+  });
+  EL.sessionSel.value=curSession;
+  EL.title.textContent=sessionTitles[curSession];
+}
+
+/* ❷ — 자동 새로고침 ---------------------------------- */
+function startAutoRefresh(){
+  clearInterval(autoTimer);
+  autoTimer = setInterval(load, POLL_MS);
+}
+EL.sessionSel.addEventListener('change',()=>{
+  curSession = EL.sessionSel.value;
+  EL.title.textContent=sessionTitles[curSession];
+  renderSpeakers();
+  startAutoRefresh();             // 세션 바꾸면 타이머 리셋
+});
+
+/* ❶ — 질문 등록 버튼 로딩 표시 ----------------------- */
+EL.btnSubmit.addEventListener('click',()=>{
+  const name=EL.nameInp.value.trim(), q=EL.qInp.value.trim();
+  if(!q){showToast('질문을 입력해 주세요');return;}
+
+  EL.btnSubmit.classList.add('btn-loading');   // ← 스피너 켜기
+  api({action:'add',session:curSession,lecture:curLecture,name,q})
+     .then(res=>{
+       myQs.push(res.id);
+       localStorage.setItem('myQs',JSON.stringify(myQs));
+       EL.nameInp.value=''; EL.qInp.value='';
+       load();
+     })
+     .finally(()=>EL.btnSubmit.classList.remove('btn-loading')); // 끄기
+});
+
+/* ❸ — 하트 SVG → IMG 로 변경, liked 토글 로직 수정 ------ */
+function renderQCard(item){
+  const liked=myLikes.includes(item.id), own=myQs.includes(item.id);
+  const li=document.createElement('div');
+  li.className='q-card';
+  li.innerHTML=`
+    <div class="q-heart ${liked?'liked':''}" data-id="${item.id}">
+      <img src="assets/heart-${liked?'on':'off'}.svg" alt="">
+      <span>${item.like}</span>
+    </div>
+    … 동일 …`;
+  …(이벤트 연결은 그대로)…
+}
+function toggleLike(div){
+  …
+  api({action:'setlike',id,delta:liked?-1:1}).then(res=>{
+    div.classList.toggle('liked');
+    div.querySelector('span').textContent=res.like;
+    div.querySelector('img')
+       .src=`assets/heart-${liked?'off':'on'}.svg`;   // 이미지 교체
+    …
+  });
+}
+
+/* ❹ — reply 권한 컨트롤 ------------------------------ */
+/*  ▶ 일반 index.html :   const isAdmin = false;         */
+/*  ▶ admin.html      :   const isAdmin = true;          */
+const isAdmin = false;   // 맨 위쪽 정도에 선언
+
+function renderQCard(item){
+  …
+  li.innerHTML=`
+    …생략…
+    <div class="q-actions">
+      ${own||isAdmin?`<img src="assets/icon-edit.svg" class="btn-edit">`:''}
+      ${own||isAdmin?`<img src="assets/icon-delete.svg" class="btn-del">`:''}
+      ${isAdmin?`<img src="assets/icon-reply.svg" class="btn-reply">`:''}
+    </div>`;
+  if(isAdmin){
+    li.querySelector('.btn-reply')
+       ?.addEventListener('click',()=>replyQ(item));
+  }
+}
+
+/* admin.html 에서는 app.js 를 그대로 불러오면서  
+   <script>const isAdmin = true;</script> 를 먼저 삽입 */
+
 /* ---------------- 초기화 ---------------- */
 function init(){
   // 타이틀 세팅
