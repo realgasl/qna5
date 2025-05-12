@@ -20,6 +20,7 @@ const EL = {
   mOk        : $('#mOk'),
   mCancel    : $('#mCancel'),
 };
+const SPIN = $('#pageLoader');
 
 /* ------- 상태 ------- */
 let curSession   = 'Session 1';
@@ -92,18 +93,21 @@ function speakerClick(id, card){
   2) 질문 목록 : 전체 1회 + 5 초 증분 폴링
 ──────────────────────────────────────────*/
 function firstLoad(){         // 전체 1회
+  clearInterval(pollingTimer); // 세션·강연 바뀔 때 기존 폴링 중단
   const loader=setTimeout(()=>EL.qList.innerHTML=
     '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>',300);
 
   api({action:'list',session:curSession,lecture:curLecture})
     .then(res=>{
       clearTimeout(loader);
+      SPIN.style.display='none';
       EL.qList.innerHTML='';
       res.rows.forEach(renderQCard);
       lastServerTs=res.serverTime||Date.now();
       startPolling();
     })
     .catch(e=>{
+      SPIN.style.display='none';
       console.error(e);
       EL.qList.innerHTML='<p style="text-align:center;color:#f33">불러오기 실패</p>';
     });
@@ -199,13 +203,13 @@ EL.mOk.onclick=()=>{ modalCB?.(EL.mTextarea.value); closeModal(); };
 EL.btnSubmit.onclick=()=>{
   const name=EL.nameInp.value.trim(), q=EL.qInp.value.trim();
   if(!q) return alert('질문을 입력해 주세요');
-  EL.btnSubmit.disabled=true; EL.btnSubmit.classList.add('btn-loading');
+  EL.btnSubmit.disabled=true; EL.btnSubmit.classList.add('btn-loading'); SPIN.style.display='flex';
   api({action:'add',session:curSession,lecture:curLecture,name,q})
     .then(r=>{
       myQs.push(r.id); localStorage.setItem('myQs',JSON.stringify(myQs));
       EL.nameInp.value=''; EL.qInp.value=''; firstLoad();
     })
-    .finally(()=>{EL.btnSubmit.disabled=false;EL.btnSubmit.classList.remove('btn-loading');});
+    .finally(()=>{EL.btnSubmit.disabled=false;EL.btnSubmit.classList.remove('btn-loading');SPIN.style.display='none';});
 };
 
 /*──────────────────────────────────────────
