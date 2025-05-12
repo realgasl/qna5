@@ -1,56 +1,41 @@
-<!DOCTYPE html>
-<html lang="ko">
+<!DOCTYPE html><html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KHIDI CMC QnA</title>
+<title>KHIDI QnA</title>
 <link rel="stylesheet" href="style.css">
-</head>
-<body>
+</head><body>
 
-<!-- ───── Hero │ logo + background ───── -->
 <header class="hero">
-  <img src="assets/logo.svg" class="logo" alt="KHIDI 합성신약 CMC 워크숍">
-  <h1 class="visually-hidden">합성신약 CMC 워크숍 – QnA</h1>
+  <img src="assets/logo.svg" alt="KHIDI" class="logo">
+  <h1 class="hero-title">합성신약 CMC 워크숍 – QnA</h1>
 
-   <!-- Session selector -->
-  <label class="session-box">
-    <select id="sessionSel">
-      <option>Session 1</option>
-      <option>Session 2</option>
-    </select>
-    <img src="assets/icon-dropdown.svg" class="dd-ico" alt="">
-  </label>
+  <select id="sessionSel" class="session-sel"></select>
+  <h2 id="sectionTitle" class="section-title"></h2>
+</header>
 
-+ <!-- Session title (동적으로 바뀜) -->
-+ <h2 id="subTitle" class="sub-title"></h2>
- </header>
+<section id="speakerWrap" class="speaker-wrap"></section>
 
-<!-- ───── Speaker cards (lecture selector) ───── -->
-<section id="speakerWrap" class="speakers"></section>
+<main>
+  <div id="qList" class="q-list"></div>
 
-<!-- ───── 질문 리스트 ───── -->
-<ul id="qList" class="q-list"></ul>
-<p id="emptyMsg" class="empty" hidden>등록된 질문이 없습니다.</p>
+  <div class="q-form">
+    <input id="inpName"   class="inp" type="text"   placeholder="이름(선택)">
+    <textarea id="inpQ"    class="inp" rows="3"      placeholder="질문 내용을 입력하세요(필수)"></textarea>
+    <button id="btnSubmit" class="btn-primary">질문 등록</button>
+  </div>
+</main>
 
-<!-- ───── 질문 입력 ───── -->
-<section class="form-box">
-  <input id="nameInp"  placeholder="이름(선택)">
-  <textarea id="qInp"   placeholder="질문 내용을 입력하세요(필수)"></textarea>
-  <button id="addBtn">질문 등록</button>
-</section>
-
-<!-- ───── 모달(편집·답변) ───── -->
-<div id="modalDim"  class="dim"   hidden></div>
-<div id="modalBox"  class="modal" hidden>
-  <h3 id="modalTit"></h3>
-  <textarea id="modalTxt" rows="6"></textarea>
-  <div class="modal-btns">
-    <button id="mCancel">취소</button>
-    <button id="mOk"     class="prim">확인</button>
+<!-- ─ Modal ─ -->
+<div id="modalBack"  class="modal-back">
+  <div id="modal"    class="modal">
+    <textarea id="mTextarea" rows="5"></textarea>
+    <div class="modal-btns">
+      <button id="mCancel" class="btn-line">취소</button>
+      <button id="mOk"     class="btn-primary">확인</button>
+    </div>
   </div>
 </div>
 
 <script src="app.js"></script>
-</body>
-</html>
+</body></html>
