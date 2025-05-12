@@ -4,8 +4,8 @@ body{font-family:'Pretendard',sans-serif;background:#e9ecf3;color:#222;text-alig
 
 /* ---------- hero ---------- */
 .hero{position:relative;padding:28px 16px 160px}
-.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1}
-.logo{height:52px;margin-bottom:12px}
+.hero-bg{position:absolute;inset:0;width:100%;height:260px;object-fit:cover;z-index:-1;overflow:hidden}
+.logo{height:150px;margin-bottom:12px}
 .hero h1{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
 .session-sel{padding:6px 28px 6px 14px;border-radius:6px;font-size:14px}
 #sectionTitle{color:#fff;font-size:22px;font-weight:600;margin-top:14px}
