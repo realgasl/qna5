@@ -2,7 +2,7 @@
   QnA front - 2025-05-**   (app.js)
 ──────────────────────────────────────────*/
 
-const API_URL = '★YOUR_DEPLOYED_GAS_WEBAPP_URL★';      // 끝에 /exec 까지
+const API_URL = 'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec';      // 끝에 /exec 까지
 const EL = {
   sessionSel : document.getElementById('sessionSel'),
   title      : document.getElementById('sectionTitle'),
