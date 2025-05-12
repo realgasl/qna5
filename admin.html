@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KHIDI CMC QnA</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <img class="hero-bg" src="assets/bg-top.webp" alt="">
+  <img class="logo" src="assets/logo.svg" alt="KHIDI">
+  <h1>합성신약 CMC 워크숍 – QnA</h1>
+  <select id="sessionSel" class="session-sel"></select>
+  <h2 id="sectionTitle"></h2>
+</header>
+
+<main>
+  <div id="speakerWrap" class="speakers"></div>
+
+  <section id="qArea">
+    <div id="qList" class="q-list"></div>
+
+    <div class="q-form">
+      <input id="inpName" placeholder="이름(선택)">
+      <textarea id="inpQ" rows="3" placeholder="질문 내용을 입력하세요(필수)"></textarea>
+      <button id="btnSubmit">질문 등록</button>
+    </div>
+  </section>
+</main>
+
+<!-- 모달 -->
+<div id="modalBack" class="modal-back">
+ <div id="modal" class="modal">
+   <textarea id="mTextarea" rows="5"></textarea>
+   <div class="modal-btns">
+     <button id="mCancel" class="btn-gray">취소</button>
+     <button id="mOk"     class="btn-main">확인</button>
+   </div>
+ </div>
+</div>
+
+<script src="app.js"></script>
+</body></html>
