@@ -103,3 +103,16 @@ body{font-family:'Pretendard',sans-serif;background:#e9ecf3;color:#222;text-alig
 .q-actions img:hover,
 .q-heart.liked img{opacity:1;}
 
+/* ===== 공통 ===== */
+body{background:#e8ecf3 url('assets/bg-top.webp') top center no-repeat; background-size:cover;}
+.container{max-width:960px;margin:0 auto;padding:0 24px;}
+/* ===== 연사 카드 ===== */
+.speaker-card{display:flex;justify-content:space-between;align-items:center;max-width:960px;margin:0 auto}
+.speaker-card.inactive{opacity:.4;filter:grayscale(1);}
+/* ===== 입력창 */
+#inpName,#inpQ{width:100%;max-width:640px} #inpQ{height:120px}
+/* ===== 로딩 오버레이 */
+#pageLoader{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999} #pageLoader
+.spinner{width:56px;height:56px;border:6px solid #fff;border-top-color:transparent;border-radius:50%;animation:rot 1s linear infinite;margin:40vh auto 0} @keyframes rot{to{transform:rotate(360deg)}}
+/* ===== 버튼 로딩상태 */
+.btn-loading{pointer-events:none;opacity:.5}
