@@ -207,7 +207,7 @@ EL.btnSubmit.onclick=()=>{
   api({action:'add',session:curSession,lecture:curLecture,name,q})
     .then(r=>{
       myQs.push(r.id); localStorage.setItem('myQs',JSON.stringify(myQs));
-      EL.nameInp.value=''; EL.qInp.value=''; firstLoad();
+      EL.nameInp.value=''; EL.qInp.value=''; fetchDiff();
     })
     .finally(()=>{EL.btnSubmit.disabled=false;EL.btnSubmit.classList.remove('btn-loading');SPIN.style.display='none';});
 };
