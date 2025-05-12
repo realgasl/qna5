@@ -107,23 +107,32 @@ function load(){
 function renderQCard(item){
   const liked = myLikes.includes(item.id);
   const own   = myQs.includes(item.id);
-  const li=document.createElement('div');
-  li.className='q-card';
-  li.innerHTML=`
-    <div class="q-heart ${liked?'liked':''}" data-id="${item.id}">
-      <svg><use href="assets/heart-${liked?'on':'off'}.svg#icon"/></svg>
+
+  const li = document.createElement('div');
+  li.className = 'q-card';
+
+  li.innerHTML = `
+    <div class="q-heart ${liked ? 'liked' : ''}" data-id="${item.id}">
+      <img src="assets/heart-${liked ? 'on' : 'off'}.svg" alt="">
       <span>${item.like}</span>
     </div>
+
     <div class="q-body">
-      <div class="q-name">${item.name||'익명'}</div>
+      <div class="q-name">${item.name || '익명'}</div>
       <div class="q-text">${item.q}</div>
-      ${item.reply ? `<div class="q-reply">↳ ${item.reply}</div>`:''}
+      ${item.reply ? '<div class="q-reply">↳ ' + item.reply + '</div>' : ''}
     </div>
+
     <div class="q-actions">
-      ${own?'<button class="btn-edit"><img src="assets/icon-edit.svg"/></button>':''}
-      ${own?'<button class="btn-del"><img src="assets/icon-delete.svg"/></button>':''}
-      <button class="btn-reply"><img src="assets/icon-reply.svg"/></button>
-    </div>`;
+      ${own ? '<button class="btn-edit"><img src="assets/icon-edit.svg" alt="edit"></button>' : ''}
+      ${own ? '<button class="btn-del"><img src="assets/icon-delete.svg" alt="del"></button>' : ''}
+      <button class="btn-reply"><img src="assets/icon-reply.svg"  alt="reply"></button>
+    </div>
+  `;
+
+  // …(나머지 이벤트 바인딩 동일)
+}
+
   /* 이벤트 연결 */
   li.querySelector('.q-heart').onclick = ()=>toggleLike(li.querySelector('.q-heart'));
   if(own){
