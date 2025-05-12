@@ -93,39 +93,50 @@ function speakerClick(id, card){
 
 /* ───────── 질문 목록 : 전체 1회 + 증분 폴링 ───────── */
 
-/* ❶ 전체 로드 (페이지 첫 진입) */
+/* ===== ① 전체 1회 로드 ===== */
 function firstLoad(){
-  api({action:'list', session:curSession, lecture:curLecture})
+  // 0.3s 뒤 로더 표시
+  const loader = setTimeout(()=>{
+      EL.qList.innerHTML =
+        '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>';
+  },300);
+
+  api({action:'list',session:curSession,lecture:curLecture})
     .then(res=>{
-      lastServerTime = res.serverTime;          // 가장 나중 시간 기억
+      clearTimeout(loader);
       EL.qList.innerHTML = '';
       res.rows.forEach(renderQCard);
-      startPolling();                           // ← 완료되면 폴링 시작
+      lastServerTime = res.serverTime || 0;
+      startPolling();                 // ← 완료되면 증분 폴링 시작
     })
-    .catch(()=>{ EL.qList.innerHTML='<p style="text-align:center;color:#f33">불러오기 실패</p>';});
+    .catch(e=>{
+      console.error(e);
+      EL.qList.innerHTML =
+        '<p style="text-align:center;color:#f33">불러오기 실패</p>';
+    });
 }
 
-/* ❷ 증분 ­fetch : since 값을 보내서 “변경분만” 받아옴 */
+/* ===== ② 변경분만 가져오기 ===== */
 function fetchDiff(){
   api({
-      action  :'list',
-      session : curSession,
-      lecture : curLecture,
-      since   : lastServerTime
+      action :'list',
+      session:curSession,
+      lecture:curLecture,
+      since  : lastServerTime
   })
   .then(res=>{
       if(res.rows && res.rows.length){
         lastServerTime = res.serverTime;
-        res.rows.forEach(renderQCard);          // **지우지 말고 추가만**
+        res.rows.forEach(renderQCard);   // 지우지 않고 추가만
       }
   })
   .catch(console.error);
 }
 
-/* ❸ 5초 간격 폴링 시작 / 세션·강연 바뀔 때 재시작 */
+/* ===== ③ 5 초 간격 증분 폴링 ===== */
 function startPolling(){
   clearInterval(pollingTimer);
-  pollingTimer = setInterval(fetchDiff, 5000);  // 5000 = 5초
+  pollingTimer = setInterval(fetchDiff, 5000);   // 필요하면 간격 조절
 }
 
 /* 🖤→ 하트 IMG & reply 포함  */
