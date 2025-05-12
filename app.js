@@ -100,11 +100,12 @@ function firstLoad(){         // 전체 1회
 
   api({action:'list',session:curSession,lecture:curLecture})
     .then(res=>{
+      /* 백엔드가 [{…},{…}] 형식만 주면 rows 가 없음 → 분기 */
+      const rows = Array.isArray(res) ? res : (res.rows||[]);
       clearTimeout(loader);
-      SPIN.style.display='none';
-      EL.qList.innerHTML='';
-      res.rows.forEach(renderQCard);
-      lastServerTs=res.serverTime||Date.now();
+      EL.qList.innerHTML = '';
+      rows.forEach(renderQCard);
+      lastServerTime = res.serverTime || Date.now();
       startPolling();
     })
     .catch(e=>{
@@ -114,12 +115,14 @@ function firstLoad(){         // 전체 1회
     });
 }
 
-function fetchDiff(){         // 변경분만
-  api({action:'list',session:curSession,lecture:curLecture,since:lastServerTs})
+/* ---------- ② fetchDiff() : rows 배열만 있을 때도 ---------- */
+function fetchDiff(){
+  api({action:'list',session:curSession,lecture:curLecture,since:lastServerTime})
     .then(res=>{
-      if(res.rows?.length){
-        lastServerTs=res.serverTime;
-        res.rows.forEach(renderQCard);
+      const rows = Array.isArray(res) ? res : (res.rows||[]);
+      if(rows.length){
+        lastServerTime = res.serverTime || Date.now();
+        rows.forEach(renderQCard);
       }
     })
     .catch(console.error);
