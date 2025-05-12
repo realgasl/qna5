@@ -1,11 +1,11 @@
 /*──────────────────────────────────────────
-  QnA Front (GitHub Pages)  2025-05-**
+  QnA Front  (GitHub Pages)  2025-05-**
 ──────────────────────────────────────────*/
+
 const API_URL =
   'https://script.google.com/macros/s/AKfycbye7m5cCG1DoQKiYO0lo3AArPDvo8x8WVW0ZBYCt9CxJvFrqI0-un0ZBCsgWs8zyQ0Y/exec';
 
-/* ------- Element refs (짧게) ------- */
-const $  = (sel,ctx=document)=>ctx.querySelector(sel);
+/* === Element refs === */
 const EL = {
   sessionSel : $('#sessionSel'),
   title      : $('#sectionTitle'),
@@ -14,25 +14,21 @@ const EL = {
   nameInp    : $('#inpName'),
   qInp       : $('#inpQ'),
   btnSubmit  : $('#btnSubmit'),
+  /* modal */
   modalBack  : $('#modalBack'),
-  modal      : $('#modal'),
+  modalArea  : $('#modal'),
   mTextarea  : $('#mTextarea'),
   mOk        : $('#mOk'),
   mCancel    : $('#mCancel'),
 };
-const SPIN = $('#pageLoader');
 
-/* ------- 상태 ------- */
-let curSession   = 'Session 1';
-let curLecture   = '';
-let lastServerTs = 0;            // 증분용 서버타임
-let pollTimer    = null;
-
-let myLikes = JSON.parse(localStorage.getItem('likes')||'[]');
-let myQs    = JSON.parse(localStorage.getItem('myQs')  ||'[]');
+let curSession = 'Session 1';
+let curLecture = '';
+let myLikes = JSON.parse(localStorage.getItem('likes') || '[]');
+let myQs    = JSON.parse(localStorage.getItem('myQs')   || '[]');
 let modalCB = null;
 
-/* ------- 세션 · 연사 ------- */
+/*───────── 세션 · 연사 데이터 ─────────*/
 const speakers = {
   'Session 1': [
     { id:'Lecture A', img:'assets/speaker-01.webp', name:'김무성 상무', org:'CMG제약',
@@ -52,21 +48,22 @@ const sessionTitles = {
   'Session 2':'방사성의약품 / 합성 펩타이드 치료제 QnA'
 };
 
-/* ------- 공통 fetch ------- */
-function api(p){
-  return fetch(API_URL + '?' + new URLSearchParams(p)).then(r=>r.json());
+/*───────── Util ─────────*/
+function $(sel, ctx = document){ return ctx.querySelector(sel); }
+function api(params){
+  const qs = new URLSearchParams(params).toString();
+  return fetch(`${API_URL}?${qs}`).then(r => r.json());
 }
+function toast(msg){ alert(msg); }
 
-/*──────────────────────────────────────────
-  1) 연사 카드
-──────────────────────────────────────────*/
+/*───────── 연사 카드 렌더링 ─────────*/
 function renderSpeakers(){
-  EL.speakerWrap.innerHTML='';
-  speakers[curSession].forEach((sp,i)=>{
-    const card=document.createElement('div');
-    card.className='speaker-card';
-    card.dataset.id=sp.id;
-    card.innerHTML=`
+  EL.speakerWrap.innerHTML = '';
+  speakers[curSession].forEach((sp, i) =>{
+    const card = document.createElement('div');
+    card.className = 'speaker-card';
+    card.dataset.id = sp.id;
+    card.innerHTML = `
       <div class="speaker-info">
         <img class="speaker-img" src="${sp.img}" alt="">
         <div>
@@ -75,72 +72,49 @@ function renderSpeakers(){
         </div>
       </div>
       <div class="speaker-time">
-        <div>${sp.time}</div><div>${sp.title}</div>
+        <div>${sp.time}</div>
+        <div>${sp.title}</div>
       </div>`;
-    card.onclick=()=>speakerClick(sp.id,card);
+    card.addEventListener('click', () => speakerClick(sp.id, card));
     EL.speakerWrap.appendChild(card);
   });
+  /* 첫 카드 자동 선택 */
   speakerClick(speakers[curSession][0].id, EL.speakerWrap.firstChild);
 }
 
 function speakerClick(id, card){
-  curLecture=id;
-  [...EL.speakerWrap.children].forEach(c=>c.classList.toggle('inactive',c!==card));
-  firstLoad();
-  lastServerTime = 0;
+  curLecture = id;
+  EL.speakerWrap.querySelectorAll('.speaker-card')
+    .forEach(c => c.classList.toggle('inactive', c !== card));
+  load();
 }
 
-/*──────────────────────────────────────────
-  2) 질문 목록 : 전체 1회 + 5 초 증분 폴링
-──────────────────────────────────────────*/
-function firstLoad(){         // 전체 1회
-  clearInterval(pollingTimer); // 세션·강연 바뀔 때 기존 폴링 중단
-  const loader=setTimeout(()=>EL.qList.innerHTML=
-    '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>',300);
-
+/*───────── 질문 목록 ─────────*/
+function load(showErr){
+  EL.qList.innerHTML =
+    '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>';
   api({action:'list',session:curSession,lecture:curLecture})
-    .then(res=>{
-      /* 백엔드가 [{…},{…}] 형식만 주면 rows 가 없음 → 분기 */
-      const rows = Array.isArray(res) ? res : (res.rows||[]);
-      clearTimeout(loader);
+    .then(rows =>{
+      if(!rows.length){
+        EL.qList.innerHTML =
+          '<p style="text-align:center;margin:60px 0;color:#888">등록된 질문이 없습니다.</p>';
+        return;
+      }
       EL.qList.innerHTML = '';
       rows.forEach(renderQCard);
-      lastServerTime = res.serverTime || Date.now();
-      startPolling();
     })
-    .catch(e=>{
-      SPIN.style.display='none';
-      console.error(e);
-      EL.qList.innerHTML='<p style="text-align:center;color:#f33">불러오기 실패</p>';
-    });
+    .catch(()=>{ if(showErr!==false) EL.qList.innerHTML =
+      '<p style="text-align:center;color:#f33">불러오기 실패</p>';});
 }
 
-/* ---------- ② fetchDiff() : rows 배열만 있을 때도 ---------- */
-function fetchDiff(){
-  api({action:'list',session:curSession,lecture:curLecture,since:lastServerTime})
-    .then(res=>{
-      const rows = Array.isArray(res) ? res : (res.rows||[]);
-      if(rows.length){
-        lastServerTime = res.serverTime || Date.now();
-        rows.forEach(renderQCard);
-      }
-    })
-    .catch(console.error);
-}
-
-function startPolling(){
-  clearInterval(pollTimer);
-  pollTimer=setInterval(fetchDiff,5000);
-}
-
-/*──────────────────────────────────────────
-  3) 카드 렌더 + 액션
-──────────────────────────────────────────*/
+/* 🖤→ 하트 IMG & reply 포함  */
 function renderQCard(item){
-  const liked=myLikes.includes(item.id), own=myQs.includes(item.id);
-  const li=document.createElement('div');
-  li.className='q-card';
-  li.innerHTML=`
+  const liked = myLikes.includes(item.id),
+        own   = myQs.includes(item.id);
+
+  const li = document.createElement('div');
+  li.className = 'q-card';
+  li.innerHTML = `
     <div class="q-heart ${liked?'liked':''}" data-id="${item.id}">
       <img src="assets/heart-${liked?'on':'off'}.svg" alt="">
       <span>${item.like}</span>
@@ -152,11 +126,12 @@ function renderQCard(item){
     </div>
     <div class="q-actions">
       ${own?`
-        <button class="btn-edit"><img src="assets/icon-edit.svg"></button>
-        <button class="btn-del"><img src="assets/icon-delete.svg"></button>`:''}
-      <button class="btn-reply"><img src="assets/icon-reply.svg"></button>
+        <button class="btn-edit"><img src="assets/icon-edit.svg" alt="edit"></button>
+        <button class="btn-del"><img src="assets/icon-delete.svg" alt="del"></button>`:''}
+      <button class="btn-reply"><img src="assets/icon-reply.svg" alt="reply"></button>
     </div>`;
-  li.querySelector('.q-heart').onclick   = ()=>toggleLike(li.querySelector('.q-heart'));
+
+  li.querySelector('.q-heart').onclick = ()=>toggleLike(li.querySelector('.q-heart'));
   if(own){
     li.querySelector('.btn-edit').onclick = ()=>editQ(item);
     li.querySelector('.btn-del').onclick  = ()=>delQ(item.id);
@@ -165,74 +140,93 @@ function renderQCard(item){
   EL.qList.appendChild(li);
 }
 
-/* edit / del / like / reply */
-function editQ(it){ openModal(it.q, txt=>{
-  const n=txt.trim(); if(!n||n===it.q) return;
-  api({action:'edit',id:it.id,q:n}); });
+/*───────── 질문 등록 ─────────*/
+EL.btnSubmit.addEventListener('click', ()=>{
+  const name = EL.nameInp.value.trim(),
+        q    = EL.qInp.value.trim();
+  if(!q){ toast('질문을 입력해 주세요'); return; }
+
+  EL.btnSubmit.classList.add('btn-loading');
+  EL.btnSubmit.disabled = true;
+
+  api({action:'add',session:curSession,lecture:curLecture,name,q})
+     .then(res =>{
+       myQs.push(res.id);
+       localStorage.setItem('myQs', JSON.stringify(myQs));
+       EL.nameInp.value=''; EL.qInp.value=''; load(false);
+     })
+     .finally(()=>{
+       EL.btnSubmit.classList.remove('btn-loading');
+       EL.btnSubmit.disabled = false;
+     });
+});
+
+/*───────── 수정/삭제/좋아요/답변 ─────────*/
+function editQ(item){
+  openModal(item.q, txt=>{
+    const next = txt.trim();
+    if(!next || next===item.q) return;
+    api({action:'edit',id:item.id,q:next}).then(()=>load(false));
+  });
 }
 function delQ(id){
   if(!confirm('삭제하시겠습니까?')) return;
-  api({action:'delete',id});
+  api({action:'delete',id}).then(()=>load(false));
 }
 function toggleLike(div){
-  const id=div.dataset.id, liked=div.classList.contains('liked');
-  api({action:'setlike',id,delta:liked?-1:1})
-    .then(r=>{
-      div.classList.toggle('liked');
-      div.querySelector('span').textContent=r.like;
-      div.querySelector('img').src=`assets/heart-${liked?'off':'on'}.svg`;
-      liked? myLikes=myLikes.filter(v=>v!==id): myLikes.push(id);
-      localStorage.setItem('likes',JSON.stringify(myLikes));
-    });
+  const id = div.dataset.id,
+        liked = div.classList.contains('liked');
+  api({action:'setlike',id,delta:liked?-1:1}).then(res=>{
+    div.classList.toggle('liked');
+    div.querySelector('span').textContent = res.like;
+    div.querySelector('img').src = `assets/heart-${liked?'off':'on'}.svg`;
+    if(liked) myLikes = myLikes.filter(v=>v!==id); else myLikes.push(id);
+    localStorage.setItem('likes', JSON.stringify(myLikes));
+  });
 }
-function replyQ(it){ openModal('', txt=>{
-  const r=txt.trim(); if(!r) return;
-  api({action:'reply',id:it.id,text:r}); },'답변을 입력하세요'); }
+function replyQ(item){
+  openModal('', txt=>{
+    const r = txt.trim(); if(!r) return;
+    api({action:'reply',id:item.id,text:r}).then(()=>load(false));
+  }, '답변을 입력하세요');
+}
 
-/*──────────────────────────────────────────
-  4)  모달
-──────────────────────────────────────────*/
+/*───────── 모달 ─────────*/
 function openModal(val, cb, ph='내용을 입력하세요'){
-  EL.mTextarea.value=val; EL.mTextarea.placeholder=ph; modalCB=cb;
-  EL.modalBack.style.display='flex';
+  EL.mTextarea.value = val;
+  EL.mTextarea.placeholder = ph;
+  modalCB = cb;
+  EL.modalBack.style.display = 'flex';
 }
+EL.mCancel.onclick = closeModal;
+EL.modalBack.addEventListener('click', e=>{
+  if(e.target === EL.modalBack) closeModal();
+});
+EL.mOk.onclick = ()=>{ if(modalCB) modalCB(EL.mTextarea.value); closeModal(); };
 function closeModal(){ EL.modalBack.style.display='none'; modalCB=null; }
-EL.mCancel.onclick=closeModal;
-EL.modalBack.onclick=e=>{if(e.target===EL.modalBack)closeModal()};
-EL.mOk.onclick=()=>{ modalCB?.(EL.mTextarea.value); closeModal(); };
 
-/*──────────────────────────────────────────
-  5)  질문 등록
-──────────────────────────────────────────*/
-EL.btnSubmit.onclick=()=>{
-  const name=EL.nameInp.value.trim(), q=EL.qInp.value.trim();
-  if(!q) return alert('질문을 입력해 주세요');
-  EL.btnSubmit.disabled=true; EL.btnSubmit.classList.add('btn-loading'); SPIN.style.display='flex';
-  api({action:'add',session:curSession,lecture:curLecture,name,q})
-    .then(r=>{
-      myQs.push(r.id); localStorage.setItem('myQs',JSON.stringify(myQs));
-      EL.nameInp.value=''; EL.qInp.value=''; fetchDiff();
-    })
-    .finally(()=>{EL.btnSubmit.disabled=false;EL.btnSubmit.classList.remove('btn-loading');SPIN.style.display='none';});
-};
-
-/*──────────────────────────────────────────
-  6)  세션 선택 & 초기화
-──────────────────────────────────────────*/
-EL.sessionSel.onchange=()=>{
-  curSession=EL.sessionSel.value;
-  EL.title.textContent=sessionTitles[curSession];
+/*───────── 세션 셀렉터 ─────────*/
+EL.sessionSel.addEventListener('change', ()=>{
+  curSession = EL.sessionSel.value;
+  EL.title.textContent = sessionTitles[curSession];
   renderSpeakers();
-};
+});
 
+/*───────── 주기적 폴링 (5 초) ─────────*/
+setInterval(()=>load(false), 5000);
+
+/*───────── 초기화 ─────────*/
 function init(){
   Object.keys(sessionTitles).forEach(s=>{
-    const o=document.createElement('option');o.value=o.textContent=s;EL.sessionSel.appendChild(o);
+    const opt = document.createElement('option'); opt.textContent = s; opt.value = s;
+    EL.sessionSel.appendChild(opt);
   });
+  /* Config 시트의 currentSession 값 가져와 기본 세션 설정 */
   api({action:'config'}).then(cfg=>{
-    if(cfg.currentSession&&sessionTitles[cfg.currentSession]) curSession=cfg.currentSession;
-    EL.sessionSel.value=curSession;
-    EL.title.textContent=sessionTitles[curSession];
+    if(cfg.currentSession && sessionTitles[cfg.currentSession])
+      curSession = cfg.currentSession;
+    EL.sessionSel.value = curSession;
+    EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
   });
 }
