@@ -23,6 +23,8 @@ const EL = {
 };
 
 let curSession = 'Session 1';
+let lastServerTime = 0;            // 백엔드가 내려준 마지막 timestamp
+let pollingTimer   = null;         // setInterval 핸들
 let curLecture = '';
 let myLikes = JSON.parse(localStorage.getItem('likes') || '[]');
 let myQs    = JSON.parse(localStorage.getItem('myQs')   || '[]');
@@ -86,25 +88,44 @@ function speakerClick(id, card){
   curLecture = id;
   EL.speakerWrap.querySelectorAll('.speaker-card')
     .forEach(c => c.classList.toggle('inactive', c !== card));
-  load();
+  firstload();
 }
 
-/*───────── 질문 목록 ─────────*/
-function load(showErr){
-  EL.qList.innerHTML =
-    '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>';
-  api({action:'list',session:curSession,lecture:curLecture})
-    .then(rows =>{
-      if(!rows.length){
-        EL.qList.innerHTML =
-          '<p style="text-align:center;margin:60px 0;color:#888">등록된 질문이 없습니다.</p>';
-        return;
-      }
+/* ───────── 질문 목록 : 전체 1회 + 증분 폴링 ───────── */
+
+/* ❶ 전체 로드 (페이지 첫 진입) */
+function firstLoad(){
+  api({action:'list', session:curSession, lecture:curLecture})
+    .then(res=>{
+      lastServerTime = res.serverTime;          // 가장 나중 시간 기억
       EL.qList.innerHTML = '';
-      rows.forEach(renderQCard);
+      res.rows.forEach(renderQCard);
+      startPolling();                           // ← 완료되면 폴링 시작
     })
-    .catch(()=>{ if(showErr!==false) EL.qList.innerHTML =
-      '<p style="text-align:center;color:#f33">불러오기 실패</p>';});
+    .catch(()=>{ EL.qList.innerHTML='<p style="text-align:center;color:#f33">불러오기 실패</p>';});
+}
+
+/* ❷ 증분 ­fetch : since 값을 보내서 “변경분만” 받아옴 */
+function fetchDiff(){
+  api({
+      action  :'list',
+      session : curSession,
+      lecture : curLecture,
+      since   : lastServerTime
+  })
+  .then(res=>{
+      if(res.rows && res.rows.length){
+        lastServerTime = res.serverTime;
+        res.rows.forEach(renderQCard);          // **지우지 말고 추가만**
+      }
+  })
+  .catch(console.error);
+}
+
+/* ❸ 5초 간격 폴링 시작 / 세션·강연 바뀔 때 재시작 */
+function startPolling(){
+  clearInterval(pollingTimer);
+  pollingTimer = setInterval(fetchDiff, 5000);  // 5000 = 5초
 }
 
 /* 🖤→ 하트 IMG & reply 포함  */
