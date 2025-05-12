@@ -120,9 +120,9 @@ function renderQCard(item){
       ${item.reply ? `<div class="q-reply">↳ ${item.reply}</div>`:''}
     </div>
     <div class="q-actions">
-      ${own?'<button class="btn-edit"><svg><use href="assets/icon-edit.svg"/></svg></button>':''}
-      ${own?'<button class="btn-del"><svg><use href="assets/icon-delete.svg"/></svg></button>':''}
-      <button class="btn-reply"><svg><use href="assets/icon-reply.svg"/></svg></button>
+      ${own?'<button class="btn-edit"><img src="assets/icon-edit.svg"/></button>':''}
+      ${own?'<button class="btn-del"><img src="assets/icon-delete.svg"/></button>':''}
+      <button class="btn-reply"><img src="assets/icon-reply.svg"/></button>
     </div>`;
   /* 이벤트 연결 */
   li.querySelector('.q-heart').onclick = ()=>toggleLike(li.querySelector('.q-heart'));
