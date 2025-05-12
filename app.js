@@ -249,6 +249,7 @@ function init(){
     EL.sessionSel.value = curSession;
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
+    firstLoad();
   });
 }
 init();
