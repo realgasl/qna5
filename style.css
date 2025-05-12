@@ -1,55 +1,146 @@
-/* 기본 */
-*{box-sizing:border-box;}body{margin:0;font-family:'Pretendard',sans-serif;color:#1d1d1f;background:#eceff6;}
-:root{--violet:#231f60;--violet-light:#6a6895;--prim:#1d1d1f;--gray:#9d9da3;--red:#d61c32;}
+/* ----------------  기본 세팅  ---------------- */
+:root{
+  --bg-main:#f4f6ff;
+  --c-primary:#1d1b75;
+  --c-primary-lt:#53509d;
+  --c-accent:#e7004c;
+  --c-gray:#666;
+  --c-gray-lt:#aaa;
+  --c-heart-off:#9e9e9e;
+  --c-heart-on:#e63946;
+}
 
-/* Hero */
-/* 오리지널.hero{position:relative;padding:48px 0 100px;background:url(assets/bg-top.webp) no-repeat center/cover;text-align:center;color:#fff;} */
-.hero{padding:48px 0 100px;position:relative;z-index:1}
-.logo{width:140px;margin-bottom:12px;}
-.hero h1{margin:0;font-size:28px;font-weight:700;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:var(--bg-main);
+  color:#222; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%;height:auto;border:0}
 
-/* Session dropdown */
-.session-box{display:inline-block;position:relative;margin-top:8px;}
-.session-box select{appearance:none;font:600 14px/1 var(--font);padding:6px 32px 6px 12px;border:0;border-radius:4px;background:#fff;color:var(--prim);}
-.dd-ico{width:12px;position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
+/* 시각적 감춤 유틸 */
+.visually-hidden{
+  position:absolute!important;clip:rect(0 0 0 0);
+  clip-path:inset(50%);width:1px;height:1px;overflow:hidden;
+}
 
-/* Speakers */
-.speakers{max-width:720px;margin:-32px auto 0;padding:0 24px;display:flex;gap:12px;flex-wrap:wrap;}
-.speaker{flex:1 1 340px;display:flex;align-items:center;gap:16px;padding:24px;border-radius:8px;background:var(--violet-light);color:#fff;cursor:pointer;transition:.2s;}
-.speaker.active{background:var(--violet);}
-.speaker.disabled{opacity:.35;pointer-events:none;}
-.speaker img{width:64px;height:64px;border-radius:50%;object-fit:cover;}
-.speaker .info{flex:1;}
-.speaker .time{font:600 13px/1 var(--font);margin-bottom:4px;opacity:.8;}
-.speaker .title{font:700 16px/1.3 var(--font);}
+/* ----------------  헤더 / 히어로  ---------------- */
+.hero{
+  position:relative;z-index:1;
+  padding:48px 0 100px;
+  text-align:center;color:#fff;
+}
+.hero .logo{width:160px;margin:0 auto 8px}
+.hero .workshop{font-size:28px;font-weight:700;margin-bottom:18px}
 
-/* 질문 리스트 */
-.q-list{max-width:720px;margin:24px auto 0;padding:0 24px;list-style:none;}
-.question{display:flex;align-items:flex-start;gap:16px;padding:20px;border-radius:8px;background:#fff;margin-bottom:12px;position:relative;}
-.question .heart{cursor:pointer;display:flex;flex-direction:column;align-items:center;width:24px;}
-.heart img{width:20px;height:20px;}
-.heart span{font:600 13px;margin-top:4px;}
-.question .body{flex:1;}
-.q-name{font:600 14px;margin-bottom:6px;}
-.q-text{margin:0 0 6px;font-size:15px;}
-.reply{margin-top:12px;padding:12px;border-left:3px solid var(--violet);background:#f5f6fc;border-radius:0 4px 4px 0;font-size:14px;color:#333;}
-.btns{position:absolute;top:16px;right:16px;display:flex;gap:12px;}
-.btns img{width:18px;cursor:pointer;}
+/* Session 드롭다운 */
+.session-box{position:relative;display:inline-block}
+.session-box select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background:#fff;border:1px solid #ddd;border-radius:6px;
+  font-size:15px;padding:6px 28px 6px 10px;font-weight:600;
+  cursor:pointer;outline:none
+}
+/* 화살표 아이콘 */
+.session-box img.dd-ico{
+  width:12px;height:12px;
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  pointer-events:none
+}
 
-/* 비어있음 */
-.empty{text-align:center;font:14px/1.6 var(--font);color:var(--gray);margin-top:48px;}
+/* ----------------  연사 카드  ---------------- */
+.speaker-wrap{
+  margin:-44px auto 32px;            /* hero 뒤 겹침 해결용 (↑) */
+  max-width:780px;
+  position:relative;z-index:2;       /* hero 보다 위 */
+  display:flex;flex-direction:column;gap:18px
+}
+.speaker-card{
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:6px;padding:22px;
+  background:var(--c-primary);color:#fff;
+  cursor:pointer;transition:background .25s,opacity .25s
+}
+.speaker-card.inactive{background:var(--c-primary-lt);opacity:.35}
+.speaker-info{display:flex;align-items:center;gap:18px}
+.speaker-img{width:72px;height:72px;flex:none;border-radius:50%;object-fit:cover}
+.speaker-name{font-size:18px;font-weight:700}
+.speaker-title{font-size:13px;color:#d8d8f2}
+.speaker-time{font-size:14px;font-weight:600;text-align:right;width:160px}
 
-/* 입력 */
-.form-box{max-width:720px;margin:32px auto 56px;padding:0 24px;display:flex;flex-direction:column;gap:12px;}
-.form-box input,.form-box textarea{width:100%;padding:12px 14px;font-size:15px;border:1px solid #c9cbd3;border-radius:4px;}
-#addBtn{align-self:flex-end;padding:10px 24px;border:0;border-radius:4px;background:var(--violet);color:#fff;font:600 14px;cursor:pointer;}
+/* ----------------  질문 카드  ---------------- */
+.q-list{max-width:780px;margin:0 auto 32px;display:flex;flex-direction:column;gap:14px}
+.q-card{
+  display:flex;align-items:center;gap:16px;
+  background:#fff;border-radius:6px;
+  padding:18px 22px;box-shadow:0 2px 5px rgba(0,0,0,.05)
+}
+.q-heart{
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;font-size:13px;cursor:pointer;user-select:none
+}
+.q-heart svg{width:20px;height:20px;fill:var(--c-heart-off);transition:.2s}
+.q-heart.liked svg{fill:var(--c-heart-on)}
+.q-body{flex:1}
+.q-name{font-weight:700;margin-bottom:2px}
+.q-actions{display:flex;gap:10px}
+.q-actions button{
+  background:none;border:0;cursor:pointer
+}
+.q-actions button svg{
+  width:18px;height:18px;fill:var(--c-gray-lt);transition:.2s
+}
+.q-actions button:hover svg{fill:var(--c-primary)}
 
-/* 모달 */
-.dim{position:fixed;inset:0;background:rgba(0,0,0,.45);}
-.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;background:#fff;border-radius:8px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.3);}
-.modal h3{margin:0 0 12px;font-size:18px;}
-.modal textarea{width:100%;min-height:120px;padding:12px 14px;border:1px solid #c9cbd3;border-radius:4px;font-size:15px;}
-.modal-btns{display:flex;justify-content:flex-end;gap:12px;margin-top:16px;}
-.modal-btns button{padding:8px 20px;border:0;border-radius:4px;font:600 14px;cursor:pointer;}
-#mCancel{background:#ddd;}
-#mOk{background:var(--violet);color:#fff;}
+/* ----------------  입력 영역  ---------------- */
+.input-wrap{
+  max-width:780px;margin:0 auto 60px;
+  display:flex;flex-direction:column;gap:12px
+}
+.input-wrap input,
+.input-wrap textarea{
+  width:100%;border:1px solid #ddd;border-radius:6px;
+  font-size:15px;padding:10px;resize:none;outline:none
+}
+.input-wrap textarea{height:120px}
+.btn-submit{
+  align-self:flex-end;
+  background:var(--c-primary);color:#fff;
+  border:0;border-radius:6px;
+  padding:10px 26px;font-weight:600;cursor:pointer;
+  transition:background .2s
+}
+.btn-submit:disabled{opacity:.55;cursor:not-allowed}
+
+/* ----------------  모달(답변/수정)  ---------------- */
+.modal-back{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  display:none;align-items:center;justify-content:center;z-index:99
+}
+.modal{
+  background:#fff;border-radius:8px;padding:24px;
+  width:90%;max-width:420px
+}
+.modal textarea{
+  width:100%;height:140px;resize:vertical;
+  border:1px solid #ddd;border-radius:6px;padding:10px;outline:none;
+  margin-bottom:16px
+}
+.m-btns{display:flex;justify-content:flex-end;gap:12px}
+.m-btn{
+  padding:8px 18px;border:0;border-radius:6px;font-weight:600;cursor:pointer
+}
+.m-cancel{background:#b9b9b9;color:#fff}
+.m-ok    {background:var(--c-primary);color:#fff}
+
+/* ----------------  반응형  ---------------- */
+@media(max-width:640px){
+  .hero{padding:32px 0 90px}
+  .speaker-wrap{margin-top:-36px}
+  .speaker-card{flex-direction:column;align-items:flex-start;gap:12px}
+  .speaker-time{width:auto;text-align:left}
+  .q-card{flex-direction:column;align-items:flex-start}
+  .q-actions{margin-left:auto}
+}
