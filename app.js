@@ -32,7 +32,20 @@ let myQs    = JSON.parse(localStorage.getItem('myQs')  ||'[]');
 let modalCB = null;
 
 /* ------- 세션 · 연사 ------- */
-const speakers = {/* … 앞서 주신 데이터 그대로 … */};
+const speakers = {
+  'Session 1': [
+    { id:'Lecture A', img:'assets/speaker-01.webp', name:'김무성 상무', org:'CMG제약',
+      time:'10:30 - 11:00', title:'유전독성(ICH M7) 불순물 관리/허가 전략' },
+    { id:'Lecture B', img:'assets/speaker-02.webp', name:'이용문 교수', org:'충북대 약대',
+      time:'11:00 - 11:30', title:'신규 N-Nitrosamines 관리전략' }
+  ],
+  'Session 2': [
+    { id:'Lecture C', img:'assets/speaker-03.webp', name:'박찬수 이사', org:'퓨처켐',
+      time:'13:00 - 13:30', title:'방사성의약품 개발 시 CMC 주요 고려사항' },
+    { id:'Lecture D', img:'assets/speaker-04.webp', name:'최희경 상무', org:'지투지바이오',
+      time:'13:30 - 14:00', title:'합성펩타이드 의약품 연구개발 관련 CMC 고려사항' }
+  ]
+};
 const sessionTitles = {
   'Session 1':'합성신약 일반 QnA',
   'Session 2':'방사성의약품 / 합성 펩타이드 치료제 QnA'
