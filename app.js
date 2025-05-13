@@ -22,6 +22,8 @@ const EL = {
   mCancel    : $('#mCancel'),
 };
 
+setInterval(poll, 5000); // ← ③ 5초 증분 폴링
+
 let curSession = 'Session 1';
 let curLecture = '';
 let myLikes = JSON.parse(localStorage.getItem('likes') || '[]');
@@ -242,7 +244,7 @@ function poll(){
        });                 // ← ① then() 닫기
 }                     // ← ② poll 함수 닫기
 
-setInterval(poll, 5000); // ← ③ 5초 증분 폴링
+
                 
 /*───────── 수정/삭제/좋아요/답변 ─────────*/
 function editQ(item){
@@ -335,3 +337,4 @@ function init(){
     }
   });
 }
+init();
