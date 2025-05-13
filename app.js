@@ -84,6 +84,15 @@ function renderSpeakers(){
 
 /* ───── 질문 리스트 전체 1회 로딩 ───── */
 function loadFull(){
+
+  if (!curLecture){
+    const list = speakers[curSession];
+    if (list && list.length){
+      curLecture = list[0].lecture;          // ex) 'Lecture A'
+    } else {
+      return;                                // 데이터 자체가 없으면 그냥 종료
+    }
+  }
   api({ action:'list', session:curSession, lecture:curLecture })
     .then(res=>{
       lastStamp = res.serverTime || Date.now();
