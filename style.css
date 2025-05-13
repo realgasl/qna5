@@ -55,7 +55,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end}
 
 /* ===== 반응형 ===== */
-@media(max-width:560px){
+@media(max-width:600px){
 /* main 콘텐츠 전체에 좌우 패딩 */
   main {
     padding: 0 1rem;
@@ -73,9 +73,14 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 }
 
 /* 연사 카드 */
+.speaker-card .speaker-time > div:nth-child(2) {
+    display: none;
 .speaker-card {
-  border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
-display: flex;
+    border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 1rem;
     flex-wrap: wrap;
     align-items: flex-start;
   }
@@ -84,8 +89,17 @@ display: flex;
     flex: 1 1 auto;
     min-width: 0;            /* 텍스트 줄임을 허용 */
   }
-  .speaker-time {
-    flex: 0 0 auto;
+   .speaker-card .speaker-info::after {
+    content: attr(data-talk);
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #fff; /* 색상은 필요에 따라 조절 */
+    word-break: keep-all;
+  .speaker-card .speaker-time {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     text-align: right;
   }
   /* 모바일에선 .talk-title(원래 위치) 숨기기 */
@@ -101,7 +115,24 @@ display: flex;
     font-size: 0.9rem;
     color: #fff;              /* 배경 어두우면 흰 글씨 */
   }
-
+/* 3) 데스크톱(>768px) 레이아웃 유지 */
+@media (min-width: 769px) {
+  .speaker-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    position: relative;
+  }
+  .speaker-card .speaker-info { /* 왼쪽 정보 */
+    grid-column: 1;
+  }
+  .speaker-card .speaker-time { /* 오른쪽 시간/제목 */
+    grid-column: 3;
+    position: static;
+    text-align: right;
+  }
+}
+         
 /* 질문 카드 */
 .q-card {
   border-radius: 16px;
