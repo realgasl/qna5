@@ -299,28 +299,40 @@ EL.sessionSel.addEventListener('change', ()=>{
   .then(res=>{
     lastStamp = res.serverTime
 
-/*───────── 초기화 ─────────*/
+/*────────── 초기화 ──────────*/
 function init(){
+  /* ① 세션 드롭다운 채우기 */
   Object.keys(sessionTitles).forEach(s=>{
-    const opt = document.createElement('option'); opt.textContent = s; opt.value = s;
+    const opt = document.createElement('option');
+    opt.textContent = s;
+    opt.value      = s;
     EL.sessionSel.appendChild(opt);
   });
-  /* Config 시트의 currentSession 값 가져와 기본 세션 설정 */
-  api({action:'config'}).then(cfg=>{
-    if(cfg.currentSession && sessionTitles[cfg.currentSession])
-      curSession = cfg.currentSession;
-    EL.sessionSel.value = curSession;
-    EL.title.textContent = sessionTitles[curSession];
+
+  /* ② Config 시트의 currentSession 값 읽기 */
+  api({ action:'config' }).then(cfg=>{
+    if (cfg.currentSession && sessionTitles[cfg.currentSession]){
+      curSession           = cfg.currentSession;          // ex) 'Session 1'
+      EL.sessionSel.value  = curSession;
+      EL.title.textContent = sessionTitles[curSession];
+    }
+
+    /* ③ 값이 없으면 첫 세션으로 폴백 */
+    if (!curSession){
+      curSession           = Object.keys(sessionTitles)[0];
+      EL.sessionSel.value  = curSession;
+      EL.title.textContent = sessionTitles[curSession];
+    }
+
+    /* ④ 연사 카드 DOM 생성 */
     renderSpeakers();
-    // ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
-if (!curSession){                    // config 가 비어 있으면
-  curSession = Object.keys(sessionTitles)[0]; // 'Session 1'
-  EL.sessionSel.value = curSession;
-}
-    if(!curLecture && speakers[curSession] && speakers[curSession].length){
-  const s0 = speakers[curSession][0];
-  curLecture = s0.lecture;          // Lecture A 등
-  speakerClick(s0.id, s0.lecture);  // 카드 highlight + 질문 목록 호출
-}
+
+    /* ⑤ 첫 연사 카드 자동 선택 → curLecture 설정 + loadFull() 호출 */
+    if (!curLecture && speakers[curSession] && speakers[curSession].length){
+      const first = speakers[curSession][0];                       // 데이터
+      curLecture  = first.lecture;                                 // 'Lecture A'
+      const firstCard = EL.speakerWrap.querySelector('.speaker-card');
+      if (firstCard) speakerClick(first.id, firstCard);            // 내부에서 loadFull()
+    }
   });
 }
