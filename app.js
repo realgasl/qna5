@@ -90,7 +90,24 @@ function speakerClick(id, card){
 }
 
 /*───────── 질문 목록 ─────────*/
-function load(showErr){
+
+function load(){
+  EL.qList.innerHTML = '<p class="info">질문을 불러오는 중…</p>';
+
+  api({ action:'list', session:curSession, lecture:curLecture })
+    .then(res => {
+      const rows = res.rows || [];          // ← 핵심
+      if (!rows.length){
+        EL.qList.innerHTML = '<p class="info">등록된 질문이 없습니다.</p>';
+        return;
+      }
+      EL.qList.innerHTML = '';
+      rows.forEach(renderQCard);
+    })
+    .catch(()=>{ EL.qList.innerHTML = '<p class="err">불러오기 실패</p>'; });
+}
+
+/*function load(showErr){
   EL.qList.innerHTML =
     '<p style="text-align:center;margin:60px 0;color:#666">질문을 불러오는 중…</p>';
   api({action:'list',session:curSession,lecture:curLecture})
@@ -105,7 +122,7 @@ function load(showErr){
     })
     .catch(()=>{ if(showErr!==false) EL.qList.innerHTML =
       '<p style="text-align:center;color:#f33">불러오기 실패</p>';});
-}
+}*/
 
 /* 🖤→ 하트 IMG & reply 포함  */
 function renderQCard(item){
