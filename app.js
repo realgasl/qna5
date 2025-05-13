@@ -92,6 +92,23 @@ function speakerClick(id, card){
   load();
 }
 
+/* ───── 질문 리스트 전체 1회 로딩 ───── */
+function loadFull(){
+  api({ action:'list', session:curSession, lecture:curLecture })
+    .then(res=>{
+      lastStamp = res.serverTime || Date.now();
+      shownIds.clear();
+      EL.qList.innerHTML = '';                     // 리스트 영역 비우기
+      (res.rows || []).forEach(r=>{                // 전체 카드 렌더
+        renderQCard(r);
+        shownIds.add(r.id);
+      });
+      if(!res.rows?.length){
+        EL.qList.innerHTML = '<p class="info">등록된 질문이 없습니다.</p>';
+      }
+    });
+}
+
 /*───────── 질문 목록 ─────────*/
 
 function load(){
@@ -286,5 +303,6 @@ function init(){
     EL.sessionSel.value = curSession;
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
+    loadFull();                // ★ 첫 질문 카드 로드
   });
 }
