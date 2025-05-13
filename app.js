@@ -251,9 +251,11 @@ function addOrUpdateCard(r){
 
 // ───── 증분 폴링 함수 ─────
 function poll(){
-  api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
+  api({ action:'list', session:curSession, lecture:curLecture,
+       //since:lastStamp
+       })
     .then(res=>{
-      lastStamp = res.serverTime;
+      lastStamp = res.serverTime || lastStamp;
       (res.rows||[]).forEach(addOrUpdateCard);
        });                 // ← ① then() 닫기
 }                     // ← ② poll 함수 닫기
