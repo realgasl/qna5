@@ -230,7 +230,7 @@ EL.sessionSel.addEventListener('change', ()=>{
 });
 
 /*───────── 주기적 폴링 (5 초) ─────────*/
-setInterval(()=>load(false), 5000);
+//setInterval(()=>load(false), 5000);
 
 /*───────── 초기화 ─────────*/
 function init(){
