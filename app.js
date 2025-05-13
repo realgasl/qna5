@@ -231,3 +231,6 @@ function init(){
   });
 }
 init();
+
+// app.js - list 호출 직전
+console.log('list-params', {action:'list', session:selSession, lecture:selLecture, since:0});
