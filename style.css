@@ -89,3 +89,29 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .speaker-card {
   cursor: pointer;            /* 연사 카드에 호버 시 포인터 */
 }
+
+/* ─── 입력 폼 고정(floating) ─── */
+.q-input-container {
+  position: fixed;
+  bottom: 0;            /* 화면 아래 */
+  left: 0;
+  width: 100%;          /* 가로 꽉 채움 */
+  padding: 1rem;        /* 여백 */
+  background: #fff;     /* 배경 (스크롤 위에서도 읽히도록) */
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 0.5rem;          /* 요소들 사이 간격 */
+  align-items: center;
+  z-index: 1000;        /* 최상위에 뜨도록 */
+}
+
+/* 입력 칸 너비 조정 */
+.q-input-container .inp {
+  flex: 1;
+  max-width: none;      /* 필요시 제거 */
+}
+
+/* qList가 입력 폼에 가려지지 않도록 패딩 추가 */
+.q-list {
+  padding-bottom: 6rem; /* 입력 컨테이너 높이 + 여유 */
+}
