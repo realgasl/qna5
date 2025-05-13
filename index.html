@@ -19,11 +19,13 @@
 
     <div id="qList" class="q-list"></div>
 
-    <div class="q-input">
-      <input id="inpName" class="inp" placeholder="이름(선택)">
-      <textarea id="inpQ"   class="inp" rows="4" placeholder="질문 내용을 입력하세요(필수)"></textarea>
-      <button id="btnSubmit" class="btn">질문 등록</button>
-    </div>
+    <!-- 기존 qList 바로 아래에 있던 폼을 아래처럼 감싸세요 -->
+<div class="q-input-container">
+  <input id="nameInp"  class="inp" placeholder="이름">
+  <textarea id="qInp" class="inp" placeholder="질문을 입력하세요…"></textarea>
+  <button id="addBtn" class="btn">등록</button>
+</div>
+    
   </main>
 
   <!-- ───── 모달 ───── -->
