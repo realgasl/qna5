@@ -111,7 +111,7 @@ function speakerClick(id, card){
 
 /*───────── 질문 목록 ─────────*/
 
-function load(){
+/*function load(){
   EL.qList.innerHTML = '<p class="info">질문을 불러오는 중…</p>';
 
   api({ action:'list', session:curSession, lecture:curLecture })
@@ -303,7 +303,6 @@ function init(){
     EL.sessionSel.value = curSession;
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
-    loadFull();                // ★ 첫 질문 카드 로드
     // ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
 if(!curLecture && speakers[curSession] && speakers[curSession].length){
   const s0 = speakers[curSession][0];
