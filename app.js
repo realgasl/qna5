@@ -81,16 +81,6 @@ function renderSpeakers(){
     card.addEventListener('click', () => speakerClick(sp.id, card));
     EL.speakerWrap.appendChild(card);
   });
-  /* 첫 카드 자동 선택 */
-  speakerClick(speakers[curSession][0].id, EL.speakerWrap.firstChild);
-}
-
-function speakerClick(id, card){
-  curLecture = id;
-  EL.speakerWrap.querySelectorAll('.speaker-card')
-    .forEach(c => c.classList.toggle('inactive', c !== card));
-  loadFull();
-}
 
 /* ───── 질문 리스트 전체 1회 로딩 ───── */
 function loadFull(){
@@ -107,6 +97,16 @@ function loadFull(){
         EL.qList.innerHTML = '<p class="info">등록된 질문이 없습니다.</p>';
       }
     });
+}
+  /* 첫 카드 자동 선택 */
+  speakerClick(speakers[curSession][0].id, EL.speakerWrap.firstChild);
+}
+
+function speakerClick(id, card){
+  curLecture = id;
+  EL.speakerWrap.querySelectorAll('.speaker-card')
+    .forEach(c => c.classList.toggle('inactive', c !== card));
+  loadFull();
 }
 
 /*───────── 질문 목록 ─────────*/
@@ -304,5 +304,11 @@ function init(){
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
     loadFull();                // ★ 첫 질문 카드 로드
+    +// ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
+if (!curLecture && speakers[curSession]?.length){
+  const s0 = speakers[curSession][0];
+  curLecture = s0.lecture;          // Lecture A 등
+  speakerClick(s0.id, s0.lecture);  // 카드 highlight + 질문 목록 호출
+}
   });
 }
