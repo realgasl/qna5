@@ -56,8 +56,20 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 
 /* ===== 반응형 ===== */
 @media(max-width:560px){
-  .speaker-card{flex-direction:column;gap:10px}
+/* main 콘텐츠 전체에 좌우 패딩 */
+  main {
+    padding: 0 1rem;
+  }
+
+  /* 고정 입력 폼은 화면 가득 */
+  .q-input-container {
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    width: 100%;
+   .speaker-card{flex-direction:column;gap:10px}
   .speaker-time{text-align:left}
+  }
 }
 
 /* 연사 카드 */
