@@ -59,8 +59,26 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
   .speaker-card{flex-direction:column;gap:10px}
   .speaker-time{text-align:left}
 }
-/* style.css 맨 아래에 추가 */
 
+/* 연사 카드 */
+.speaker-card {
+  border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
+}
+
+/* 질문 카드 */
+.q-card {
+  border-radius: 16px;
+}
+
+/* 이름/질문 입력창 */
+.inp {
+  border-radius: 12px;    /* input, textarea 공통 클래스 */
+}
+
+/* 등록 버튼 */
+.btn {
+  border-radius: 12px;
+}
 .q-heart {
   display: inline-flex;      /* flex로 세로 정렬 */
   flex-direction: column;     /* 아이콘 위, 숫자 아래 */
