@@ -26,6 +26,8 @@ let curSession = 'Session 1';
 let curLecture = '';
 let myLikes = JSON.parse(localStorage.getItem('likes') || '[]');
 let myQs    = JSON.parse(localStorage.getItem('myQs')   || '[]');
+/*폴링 변수값*/ let lastStamp = 0;
+/*폴링 변수값*/ const shownIds = new Set();
 let modalCB = null;
 
 /*───────── 세션 · 연사 데이터 ─────────*/
@@ -86,17 +88,23 @@ function speakerClick(id, card){
   curLecture = id;
   EL.speakerWrap.querySelectorAll('.speaker-card')
     .forEach(c => c.classList.toggle('inactive', c !== card));
-  load();
+  loadFull();
 }
 
 /*───────── 질문 목록 ─────────*/
 
-function load(){
+function loadfull(){
+  EL.qList.innerHTML = '<p class="info">질문을 불러오는 중…</p>';
+
+  api({action:'list', session:curSession, lecture:curLecture})
+    .then(res => {
+      const rows = res.rows || [];          // ← 핵심
+/*function load(){
   EL.qList.innerHTML = '<p class="info">질문을 불러오는 중…</p>';
 
   api({ action:'list', session:curSession, lecture:curLecture })
     .then(res => {
-      const rows = res.rows || [];          // ← 핵심
+      const rows = res.rows || [];          // ← 핵심*/
       if (!rows.length){
         EL.qList.innerHTML = '<p class="info">등록된 질문이 없습니다.</p>';
         return;
@@ -155,6 +163,37 @@ function renderQCard(item){
   }
   li.querySelector('.btn-reply').onclick = ()=>replyQ(item);
   EL.qList.appendChild(li);
+}
+
+/* 카드처리 헬퍼  */
+
+function addOrUpdateCard(r){
+  const card = document.querySelector(`[data-id="${r.id}"]`);
+
+  if(card){                   // 이미 있으면 → 좋아요·답변만 갱신
+    card.querySelector('.likeCnt').textContent = r.like;
+    if(r.reply) card.querySelector('.reply').textContent = r.reply;
+    return;
+  }
+
+  // 새 질문이면 렌더 + track
+  renderQCard(r);             // (기존 함수) 내부에서 data-id, likeCnt, reply 요소 생성
+  shownIds.add(r.id);
+}
+
+/*───────── Poll ─────────*/
+function poll(){
+  api({
+    action  : 'list',
+    session : curSession,
+    lecture : curLecture,
+    since   : lastStamp            // ← 증분
+  })
+  .then(res => {
+    lastStamp = res.serverTime || lastStamp;
+
+    (res.rows || []).forEach(addOrUpdateCard);
+  });
 }
 
 /*───────── 질문 등록 ─────────*/
@@ -245,6 +284,7 @@ function init(){
     EL.sessionSel.value = curSession;
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
+    setInterval(poll, 5000); // 5초 증분 폴링
   });
 }
 init();
