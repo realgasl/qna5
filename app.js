@@ -180,7 +180,29 @@ EL.btnSubmit.addEventListener('click', ()=>{
        EL.btnSubmit.disabled = false;
      });
 });
+// ───── 카드 증분 처리 ─────
+function addOrUpdateCard(r){
+const card = document.querySelector([data-id=\"${r.id}\"]);
+    if(card){ // 이미 있으면 값만 갱신
+       card.querySelector('.likeCnt').textContent = r.like;
+    if(r.reply){ // 답변 첫 반영 시 div 생성
+    let rep = card.querySelector('.q-reply');
+    if(!rep){\n rep = document.createElement('div');
+             rep.className = 'q-reply';
+             card.querySelector('.q-body').appendChild(rep);
+             }
+      rep.textContent = ↳ ${r.reply};\n }
+      return;\
+  }
+  renderQCard(r); // 새 질문이면 카드 추가
+  shownIds.add(r.id);
+  }
 
+// ───── 증분 폴링 함수 ─────
+function poll(){
+  api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
+    .then(res=>{\n lastStamp = res.serverTime
+                
 /*───────── 수정/삭제/좋아요/답변 ─────────*/
 function editQ(item){
   openModal(item.q, txt=>{
@@ -252,6 +274,3 @@ function init(){
   });
 }
 init();
-
-// app.js - list 호출 직전
-console.log('list-params', {action:'list', session:selSession, lecture:selLecture, since:0});
