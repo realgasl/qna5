@@ -230,7 +230,9 @@ function addOrUpdateCard(r){
   const card = document.querySelector(`[data-id="${r.id}"]`);
 
   if (card){                    // 🚩 존재 → 숫자/답변만 갱신
-    card.querySelector('.likeCnt').textContent = r.like;
+    //card.querySelector('.likeCnt').textContent = r.like;
+    const heart = card.querySelector('.q-heart');
+    if (heart) heart.querySelector('span').textContent = r.like;
 
     if (r.reply){
       let rep = card.querySelector('.q-reply');
