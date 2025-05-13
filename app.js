@@ -87,6 +87,7 @@ function renderSpeakers(){
       card.className       = 'speaker-card';
       card.dataset.id      = sp.id;         // Lecture A, B, C...
       card.dataset.lecture = sp.lecture;    // Lecture 명시
+      card.dataset.talk= sp.title;          // ← 여기에 추가
       card.innerHTML       = `
         <div class="speaker-info">
           <img class="speaker-img" src="${sp.img}" alt="">
