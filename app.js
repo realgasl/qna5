@@ -61,6 +61,20 @@ function api(params){
 }
 function toast(msg){ alert(msg); }
 
+/**
+ * 연사 카드 클릭 핸들러
+ *  - curLecture 설정
+ *  - 다른 카드는 비활성화
+ *  - loadFull() 호출하여 질문 리스트 로드
+ */
+function speakerClick(id, card){
+  curLecture = id;
+  EL.speakerWrap
+    .querySelectorAll('.speaker-card')
+    .forEach(c => c.classList.toggle('inactive', c !== card));
+  loadFull();
+}
+
 /*───────── 연사 카드 렌더링 ─────────*/
 function renderSpeakers(){
   // 1) 연사 컨테이너 비우기
