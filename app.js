@@ -209,7 +209,7 @@ function addOrUpdateCard(r){
 function poll(){
   api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
     .then(res=>{
-      lastStamp = res.serverTime
+      lastStamp = res.serverTime;
       (res.rows||[]).forEach(addOrUpdateCard);
        });                 // ← ① then() 닫기
 }                     // ← ② poll 함수 닫기
