@@ -305,7 +305,7 @@ function init(){
     renderSpeakers();
     loadFull();                // ★ 첫 질문 카드 로드
     +// ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
-if (!curLecture && speakers[curSession]?.length){
+if(!curLecture && speakers[curSession] && speakers[curSession].length){
   const s0 = speakers[curSession][0];
   curLecture = s0.lecture;          // Lecture A 등
   speakerClick(s0.id, s0.lecture);  // 카드 highlight + 질문 목록 호출
