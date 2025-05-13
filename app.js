@@ -259,11 +259,23 @@ function poll(){
        })
     .then(res=>{
       lastStamp = res.serverTime || lastStamp;
+
+// 1) 서버에 아직 남아 있는 질문 ID 집합
+      const serverIds = new Set((res.rows||[]).map(r=>r.id));
+
+// 2) 화면에 있으나 서버에는 없는 ID를 shownIds에서 걸러서 제거
+    for(const id of Array.from(shownIds)){
+      if(!serverIds.has(id)){
+        // 2-1) DOM에서 지우기
+        const card = document.querySelector(`.q-card[data-id="${id}"]`);
+        if(card) card.remove();
+        // 2-2) shownIds에서도 삭제
+        shownIds.delete(id);
+      }
+    }
       (res.rows||[]).forEach(addOrUpdateCard);
        });                 // ← ① then() 닫기
 }                     // ← ② poll 함수 닫기
-
-
                 
 /*───────── 수정/삭제/좋아요/답변 ─────────*/
 function editQ(item){
