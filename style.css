@@ -75,7 +75,32 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 /* 연사 카드 */
 .speaker-card {
   border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
-}
+display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  /* 이너 info 영역은 좌측에, 시간은 우측 상단에 */
+  .speaker-info {
+    flex: 1 1 auto;
+    min-width: 0;            /* 텍스트 줄임을 허용 */
+  }
+  .speaker-time {
+    flex: 0 0 auto;
+    text-align: right;
+  }
+  /* 모바일에선 .talk-title(원래 위치) 숨기기 */
+  .speaker-time .talk-title {
+    display: none;
+  }
+  /* 대신 dataset.talk 값으로 강의제목을 info 아래에 뿌려주기 */
+  .speaker-card::after {
+    content: attr(data-talk);
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0 0;       /* 이름/소속 아래 여백 */
+    font-size: 0.9rem;
+    color: #fff;              /* 배경 어두우면 흰 글씨 */
+  }
 
 /* 질문 카드 */
 .q-card {
