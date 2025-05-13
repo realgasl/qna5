@@ -217,7 +217,7 @@ EL.btnSubmit.addEventListener('click', ()=>{
      .then(res =>{
        myQs.push(res.id);
        localStorage.setItem('myQs', JSON.stringify(myQs));
-       EL.nameInp.value=''; EL.qInp.value=''; load(false);
+       EL.nameInp.value=''; EL.qInp.value=''; loadFull();
      })
      .finally(()=>{
        EL.btnSubmit.classList.remove('btn-loading');
@@ -265,12 +265,12 @@ function editQ(item){
   openModal(item.q, txt=>{
     const next = txt.trim();
     if(!next || next===item.q) return;
-    api({action:'edit',id:item.id,q:next}).then(()=>load(false));
+    api({action:'edit',id:item.id,q:next}).then(()=>loadFull());
   });
 }
 function delQ(id){
   if(!confirm('삭제하시겠습니까?')) return;
-  api({action:'delete',id}).then(()=>load(false));
+  api({action:'delete',id}).then(()=>loadFull());
 }
 function toggleLike(div){
   const id = div.dataset.id,
@@ -286,7 +286,7 @@ function toggleLike(div){
 function replyQ(item){
   openModal('', txt=>{
     const r = txt.trim(); if(!r) return;
-    api({action:'reply',id:item.id,text:r}).then(()=>load(false));
+    api({action:'reply',id:item.id,text:r}).then(()=>loadFull());
   }, '답변을 입력하세요');
 }
 
