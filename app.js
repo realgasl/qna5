@@ -89,7 +89,7 @@ function speakerClick(id, card){
   curLecture = id;
   EL.speakerWrap.querySelectorAll('.speaker-card')
     .forEach(c => c.classList.toggle('inactive', c !== card));
-  load();
+  loadFull();
 }
 
 /* ───── 질문 리스트 전체 1회 로딩 ───── */
