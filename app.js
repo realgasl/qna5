@@ -180,23 +180,30 @@ EL.btnSubmit.addEventListener('click', ()=>{
        EL.btnSubmit.disabled = false;
      });
 });
-// ───── 카드 증분 처리 ─────
+/*──────── 카드 증분 처리 ────────*/
 function addOrUpdateCard(r){
-const card = document.querySelector([data-id=\"${r.id}\"]);
-    if(card){ // 이미 있으면 값만 갱신
-       card.querySelector('.likeCnt').textContent = r.like;
-    if(r.reply){ // 답변 첫 반영 시 div 생성
-    let rep = card.querySelector('.q-reply');
-    if(!rep){\n rep = document.createElement('div');
-             rep.className = 'q-reply';
-             card.querySelector('.q-body').appendChild(rep);
-             }
-      rep.textContent = ↳ ${r.reply};\n }
-      return;\
+  // 1) 이미 화면에 있는 카드 찾기
+  const card = document.querySelector(`[data-id="${r.id}"]`);
+
+  if (card){                    // 🚩 존재 → 숫자/답변만 갱신
+    card.querySelector('.likeCnt').textContent = r.like;
+
+    if (r.reply){
+      let rep = card.querySelector('.q-reply');
+      if (!rep){                // 첫 답변이면 div 생성
+        rep = document.createElement('div');
+        rep.className = 'q-reply';
+        card.querySelector('.q-body').appendChild(rep);
+      }
+      rep.textContent = `↳ ${r.reply}`;
+    }
+    return;                     // 끝
   }
-  renderQCard(r); // 새 질문이면 카드 추가
+
+  // 2) 새 카드 렌더
+  renderQCard(r);
   shownIds.add(r.id);
-  }
+}
 
 // ───── 증분 폴링 함수 ─────
 function poll(){
