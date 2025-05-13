@@ -102,25 +102,26 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
   cursor: pointer;            /* 연사 카드에 호버 시 포인터 */
 }
 
-/* ─── 입력 폼 고정(floating) ─── */
+/* 입력 폼을 세로(상하) 스택으로 */
 .q-input-container {
-  position: fixed;
-  bottom: 0;            /* 화면 아래 */
-  left: 0;
-  width: 100%;          /* 가로 꽉 채움 */
-  padding: 1rem;        /* 여백 */
-  background: #fff;     /* 배경 (스크롤 위에서도 읽히도록) */
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
   display: flex;
-  gap: 0.5rem;          /* 요소들 사이 간격 */
-  align-items: center;
-  z-index: 1000;        /* 최상위에 뜨도록 */
+  flex-direction: column;   /* ← 가로에서 세로로 변경 */
+  align-items: stretch;     /* 자식 너비를 컨테이너에 맞춤 */
+  gap: 0.75rem;             /* 상하 요소 간격 */
+  padding: 1rem;            /* 기존 패딩 유지 */
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  z-index: 1000;
 }
 
-/* 입력 칸 너비 조정 */
-.q-input-container .inp {
-  flex: 1;
-  max-width: none;      /* 필요시 제거 */
+/* 각 요소 풀폭, 마지막 버튼 아래 여백 없애기 */
+.q-input-container .inp,
+.q-input-container .btn {
+  width: 100%;
+  margin: 0;
 }
 
 /* qList가 입력 폼에 가려지지 않도록 패딩 추가 */
