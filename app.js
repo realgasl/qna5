@@ -268,7 +268,7 @@ EL.sessionSel.addEventListener('change', ()=>{
 });
 
 /*───────── 주기적 폴링 (5 초) ─────────*/
-function poll(){
+/*function poll(){
   api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
   .then(res=>{
     lastStamp = res.serverTime
@@ -288,4 +288,3 @@ function init(){
     renderSpeakers();
   });
 }
-init();
