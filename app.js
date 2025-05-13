@@ -62,7 +62,11 @@ function toast(msg){ alert(msg); }
 /*───────── 연사 카드 렌더링 ─────────*/
 function renderSpeakers(){
   EL.speakerWrap.innerHTML = '';
-  speakers[curSession].forEach((sp, i) =>{
+const spList = Array.isArray(speakers[curSession])
+               ? speakers[curSession]                 // 배열
+               : Object.values(speakers[curSession]); // 객체 → 값 배열
+
+ spList.forEach((sp, i) =>{
     const card = document.createElement('div');
     card.className = 'speaker-card';
     card.dataset.id = sp.id;
@@ -86,9 +90,11 @@ function renderSpeakers(){
 function loadFull(){
 
   if (!curLecture){
-    const list = speakers[curSession];
-    if (list && list.length){
-      curLecture = list[0].lecture;          // ex) 'Lecture A'
+    const list = Array.isArray(speakers[curSession])
+               ? speakers[curSession]
+               : Object.values(speakers[curSession]);
+ if (list.length){
+   curLecture = list[0].lecture;
     } else {
       return;                                // 데이터 자체가 없으면 그냥 종료
     }
