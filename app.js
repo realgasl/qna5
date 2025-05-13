@@ -178,6 +178,7 @@ function renderQCard(item){
 
   const li = document.createElement('div');
   li.className = 'q-card';
+  li.dataset.id = item.id;
   li.innerHTML = `
     <div class="q-heart ${liked?'liked':''}" data-id="${item.id}">
       <img src="assets/heart-${liked?'on':'off'}.svg" alt="">
