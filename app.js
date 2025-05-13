@@ -229,21 +229,36 @@ EL.btnSubmit.addEventListener('click', ()=>{
 function addOrUpdateCard(r){
   // 1) 이미 화면에 있는 카드 찾기
   const card = document.querySelector(`[data-id="${r.id}"]`);
-
   if (card){                    // 🚩 존재 → 숫자/답변만 갱신
-    //card.querySelector('.likeCnt').textContent = r.like;
-    const heart = card.querySelector('.q-heart');
-    if (heart) heart.querySelector('span').textContent = r.like;
-
-    if (r.reply){
-      let rep = card.querySelector('.q-reply');
-      if (!rep){                // 첫 답변이면 div 생성
-        rep = document.createElement('div');
-        rep.className = 'q-reply';
-        card.querySelector('.q-body').appendChild(rep);
-      }
-      rep.textContent = `↳ ${r.reply}`;
+// — 질문 텍스트 변경 반영 —
+    const txt = card.querySelector('.q-text');
+    if(txt && txt.textContent !== r.q) {
+      txt.textContent = r.q;
     }
+// — 좋아요 변경 반영 —
+    const likeSpan = card.querySelector('.q-heart span');
+    if(likeSpan && likeSpan.textContent !== String(r.like)) {
+      likeSpan.textContent = r.like;
+    }
+/* const heart = card.querySelector('.q-heart');
+if (heart) heart.querySelector('span').textContent = r.like;*/
+    // — 작성자 변경 반영 (선택) —
+    const who = card.querySelector('.q-name');
+    if(who && who.textContent !== r.name) {
+      who.textContent = r.name;
+    }
+    // — 답글 변경 반영 —
+     if(r.reply){
+       let rep = card.querySelector('.q-reply');
+       if(!rep){
+         rep = document.createElement('div');
+         rep.className = 'q-reply';
+         card.querySelector('.q-body').appendChild(rep);
+       }
+       if(rep.textContent !== `↳ ${r.reply}`) {
+         rep.textContent = `↳ ${r.reply}`;
+       }
+     }
     return;                     // 끝
   }
 
