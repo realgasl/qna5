@@ -26,6 +26,9 @@ let curSession = 'Session 1';
 let curLecture = '';
 let myLikes = JSON.parse(localStorage.getItem('likes') || '[]');
 let myQs    = JSON.parse(localStorage.getItem('myQs')   || '[]');
+/* 폴링용 */
+let lastStamp = 0; // 마지막 서버 시각(ms)
+const shownIds = new Set(); // 화면에 있는 질문 id
 let modalCB = null;
 
 /*───────── 세션 · 연사 데이터 ─────────*/
@@ -230,7 +233,8 @@ EL.sessionSel.addEventListener('change', ()=>{
 });
 
 /*───────── 주기적 폴링 (5 초) ─────────*/
-//setInterval(()=>load(false), 5000);
+function poll(){\n api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
+  .then(res=>{\n lastStamp = res.serverTime
 
 /*───────── 초기화 ─────────*/
 function init(){
