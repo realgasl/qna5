@@ -210,6 +210,11 @@ function poll(){
   api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
     .then(res=>{
       lastStamp = res.serverTime
+      (res.rows||[]).forEach(addOrUpdateCard);
+       });                 // ← ① then() 닫기
+}                     // ← ② poll 함수 닫기
+
+setInterval(poll, 5000); // ← ③ 5초 증분 폴링
                 
 /*───────── 수정/삭제/좋아요/답변 ─────────*/
 function editQ(item){
