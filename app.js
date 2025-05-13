@@ -307,7 +307,7 @@ EL.sessionSel.addEventListener('change', ()=>{
 
 /*────────── 초기화 ──────────*/
 function init(){
-  /* ① 세션 드롭다운 채우기 */
+  /* 1. 세션 드롭다운 */
   Object.keys(sessionTitles).forEach(s=>{
     const opt = document.createElement('option');
     opt.textContent = s;
@@ -315,30 +315,27 @@ function init(){
     EL.sessionSel.appendChild(opt);
   });
 
-  /* ② Config 시트의 currentSession 값 읽기 */
-  api({ action:'config' }).then(cfg=>{
+  /* 2. Config 시트로 기본 세션 결정 */
+  api({action:'config'}).then(cfg=>{
     if (cfg.currentSession && sessionTitles[cfg.currentSession]){
-      curSession           = cfg.currentSession;          // ex) 'Session 1'
+      curSession           = cfg.currentSession;           // ex) 'Session 1'
+      EL.sessionSel.value  = curSession;
+      EL.title.textContent = sessionTitles[curSession];
+    } else {
+      curSession           = Object.keys(sessionTitles)[0]; // 폴백
       EL.sessionSel.value  = curSession;
       EL.title.textContent = sessionTitles[curSession];
     }
 
-    /* ③ 값이 없으면 첫 세션으로 폴백 */
-    if (!curSession){
-      curSession           = Object.keys(sessionTitles)[0];
-      EL.sessionSel.value  = curSession;
-      EL.title.textContent = sessionTitles[curSession];
-    }
-
-    /* ④ 연사 카드 DOM 생성 */
+    /* 3. 연사 카드 DOM 생성 */
     renderSpeakers();
 
-    /* ⑤ 첫 연사 카드 자동 선택 → curLecture 설정 + loadFull() 호출 */
-    if (!curLecture && speakers[curSession] && speakers[curSession].length){
-      const first = speakers[curSession][0];                       // 데이터
-      curLecture  = first.lecture;                                 // 'Lecture A'
-      const firstCard = EL.speakerWrap.querySelector('.speaker-card');
-      if (firstCard) speakerClick(first.id, firstCard);            // 내부에서 loadFull()
+    /* 4. 첫 카드 click → speakerClick 내부에서 loadFull 호출 */
+    const first = EL.speakerWrap.querySelector('.speaker-card');
+    if (first){
+      const id = first.dataset.id;
+      curLecture = first.dataset.lecture;   // 안전용
+      first.click();                        // speakerClick(id, first) 실행
     }
   });
 }
