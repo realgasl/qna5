@@ -208,7 +208,8 @@ function addOrUpdateCard(r){
 // ───── 증분 폴링 함수 ─────
 function poll(){
   api({ action:'list', session:curSession, lecture:curLecture, since:lastStamp })
-    .then(res=>{\n lastStamp = res.serverTime
+    .then(res=>{
+      lastStamp = res.serverTime
                 
 /*───────── 수정/삭제/좋아요/답변 ─────────*/
 function editQ(item){
