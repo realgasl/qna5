@@ -61,30 +61,36 @@ function toast(msg){ alert(msg); }
 
 /*───────── 연사 카드 렌더링 ─────────*/
 function renderSpeakers(){
+  // 1) 연사 컨테이너 비우기
   EL.speakerWrap.innerHTML = '';
-const spList = Array.isArray(speakers[curSession])
-               ? speakers[curSession]                 // 배열
-               : Object.values(speakers[curSession]); // 객체 → 값 배열
 
- spList.forEach((sp, i) =>{
-    const card = document.createElement('div');
-    card.className = 'speaker-card';
-    card.dataset.id = sp.id;
-    card.innerHTML = `
-      <div class="speaker-info">
-        <img class="speaker-img" src="${sp.img}" alt="">
-        <div>
-          <div class="speaker-name">${sp.name}</div>
-          <div class="speaker-title">${sp.org}</div>
+  // 2) speakers[curSession]이 배열이 맞다면 바로 forEach
+  (Array.isArray(speakers[curSession]) ? speakers[curSession] : [])
+    .forEach(sp => {
+      const card = document.createElement('div');
+      card.className       = 'speaker-card';
+      card.dataset.id      = sp.id;         // Lecture A, B, C...
+      card.dataset.lecture = sp.lecture;    // Lecture 명시
+      card.innerHTML       = `
+        <div class="speaker-info">
+          <img class="speaker-img" src="${sp.img}" alt="">
+          <div>
+            <div class="speaker-name">${sp.name}</div>
+            <div class="speaker-title">${sp.org}</div>
+          </div>
         </div>
-      </div>
-      <div class="speaker-time">
-        <div>${sp.time}</div>
-        <div>${sp.title}</div>
-      </div>`;
-    card.addEventListener('click', () => speakerClick(sp.id, card));
-    EL.speakerWrap.appendChild(card);
-  });
+        <div class="speaker-time">
+          <div>${sp.time}</div>
+          <div>${sp.title}</div>
+        </div>`;
+      card.addEventListener('click', () => speakerClick(sp.id, card));
+      EL.speakerWrap.appendChild(card);
+    });
+
+  // 3) “첫 카드” 자동 클릭 → speakerClick 내부에서 loadFull 호출
+  const first = EL.speakerWrap.querySelector('.speaker-card');
+  if (first) first.click();
+}
 
 /* ───── 질문 리스트 전체 1회 로딩 ───── */
 function loadFull(){
@@ -112,16 +118,6 @@ function loadFull(){
         EL.qList.innerHTML = '<p class="info">등록된 질문이 없습니다.</p>';
       }
     });
-}
-  /* 첫 카드 자동 선택 */
-  speakerClick(speakers[curSession][0].id, EL.speakerWrap.firstChild);
-}
-
-function speakerClick(id, card){
-  curLecture = id;
-  EL.speakerWrap.querySelectorAll('.speaker-card')
-    .forEach(c => c.classList.toggle('inactive', c !== card));
-  loadFull();
 }
 
 /*───────── 질문 목록 ─────────*/
