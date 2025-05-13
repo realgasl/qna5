@@ -304,7 +304,7 @@ function init(){
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
     loadFull();                // ★ 첫 질문 카드 로드
-    +// ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
+    // ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
 if(!curLecture && speakers[curSession] && speakers[curSession].length){
   const s0 = speakers[curSession][0];
   curLecture = s0.lecture;          // Lecture A 등
