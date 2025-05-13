@@ -304,7 +304,11 @@ function init(){
     EL.title.textContent = sessionTitles[curSession];
     renderSpeakers();
     // ★ 첫 강의(lecture) 선택이 안 된 상태이므로 수동 설정
-if(!curLecture && speakers[curSession] && speakers[curSession].length){
+if (!curSession){                    // config 가 비어 있으면
+  curSession = Object.keys(sessionTitles)[0]; // 'Session 1'
+  EL.sessionSel.value = curSession;
+}
+    if(!curLecture && speakers[curSession] && speakers[curSession].length){
   const s0 = speakers[curSession][0];
   curLecture = s0.lecture;          // Lecture A 등
   speakerClick(s0.id, s0.lecture);  // 카드 highlight + 질문 목록 호출
