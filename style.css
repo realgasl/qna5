@@ -59,3 +59,15 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
   .speaker-card{flex-direction:column;gap:10px}
   .speaker-time{text-align:left}
 }
+/* style.css 맨 아래에 추가 */
+
+.q-heart {
+  display: inline-flex;      /* flex로 세로 정렬 */
+  flex-direction: column;     /* 아이콘 위, 숫자 아래 */
+  align-items: center;
+  cursor: pointer;            /* 하트 자체에 커서 포인터 */
+}
+
+.speaker-card {
+  cursor: pointer;            /* 연사 카드에 호버 시 포인터 */
+}
