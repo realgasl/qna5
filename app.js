@@ -49,8 +49,8 @@ const speakers = {
   ]
 };
 const sessionTitles = {
-  'Session 1':'합성신약 일반 QnA',
-  'Session 2':'방사성의약품 / 합성 펩타이드 치료제 QnA'
+  'Session 1':'합성신약 일반',
+  'Session 2':'방사성의약품 / 합성 펩타이드 치료제'
 };
 
 /*───────── Util ─────────*/
