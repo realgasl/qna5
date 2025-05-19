@@ -6,6 +6,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 
 /* ===== hero ===== */
 .hero{background:url(assets/bg-top.webp) center/cover;height:160px;text-align:center;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
 .logo{height:42px}
 .hero>h1{font-size:22px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
@@ -15,6 +16,7 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;gap
 /* ===== speaker ===== */
 .speaker-wrap{max-width:580px;margin:22px auto 12px;display:flex;flex-direction:column;gap:12px}
 .speaker-card{display:flex;justify-content:space-between;padding:16px;border-radius:6px;
+  background:linear-gradient(135deg,#24105e 0%,#511a7e 100%);color:#fff;transition:.2s}
 background:linear-gradient(135deg,#24105e 0%,#511a7e 100%);color:#fff;transition:.2s}
 .speaker-card.inactive{opacity:.45;filter:grayscale(.9)}
 .speaker-info{display:flex;gap:12px}
@@ -45,6 +47,7 @@ background:linear-gradient(135deg,#24105e 0%,#511a7e 100%);color:#fff;transition
 .btn[disabled],.btn.btn-loading{opacity:.5;cursor:default}
 .btn.ghost{background:#ddd;color:#333}
 .btn.btn-loading::after{content:'';display:inline-block;width:15px;height:15px;border:2px solid #fff;
+  border-top-color:transparent;border-radius:50%;margin-left:6px;animation:spin .9s linear infinite}
 border-top-color:transparent;border-radius:50%;margin-left:6px;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(1turn)}}
 
@@ -56,11 +59,16 @@ border-top-color:transparent;border-radius:50%;margin-left:6px;animation:spin .9
 
 /* ===== 반응형 ===== */
 @media(max-width:560px){
+@media(max-width:600px){
+  main { padding: 0 1rem; }
+  .q-input-container { left: 0; right: 0; padding: 1rem; width: 100%; }
 /* main 콘텐츠 전체에 좌우 패딩 */
 main {
 padding: 0 1rem;
 }
 
+/* 커스텀 스크롤업된 input container */
+.q-input-container{position:fixed;bottom:0;left:0;width:100%;padding:1rem;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,0.1);display:flex;flex-direction:column;gap:0.75rem;z-index:1000}
 /* 고정 입력 폼은 화면 가득 */
 .q-input-container {
 left: 0;
@@ -73,36 +81,71 @@ width: 100%;
 }
 
 /* 연사 카드 */
+.speaker-card .speaker-time > div:nth-child(2) {
+    display: none;
 .speaker-card {
-border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
-}
+  border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
 display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-  }
-  /* 이너 info 영역은 좌측에, 시간은 우측 상단에 */
-  .speaker-info {
-    flex: 1 1 auto;
-    min-width: 0;            /* 텍스트 줄임을 허용 */
-  }
+    border-radius: 16px;    /* 기존보다 더 큰 둥글기 */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 1rem;
+flex-wrap: wrap;
+align-items: flex-start;
+}
+/* 이너 info 영역은 좌측에, 시간은 우측 상단에 */
+.speaker-info {
+flex: 1 1 auto;
+min-width: 0;            /* 텍스트 줄임을 허용 */
+}
   .speaker-time {
     flex: 0 0 auto;
-    text-align: right;
-  }
-  /* 모바일에선 .talk-title(원래 위치) 숨기기 */
-  .speaker-time .talk-title {
-    display: none;
-  }
-  /* 대신 dataset.talk 값으로 강의제목을 info 아래에 뿌려주기 */
-  .speaker-card::after {
+   .speaker-card .speaker-info::after {
     content: attr(data-talk);
     display: block;
-    width: 100%;
-    margin: 0.5rem 0 0;       /* 이름/소속 아래 여백 */
+    margin-top: 0.5rem;
     font-size: 0.9rem;
-    color: #fff;              /* 배경 어두우면 흰 글씨 */
-  }
+    color: #fff; /* 색상은 필요에 따라 조절 */
+    word-break: keep-all;
+  .speaker-card .speaker-time {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+text-align: right;
+}
+/* 모바일에선 .talk-title(원래 위치) 숨기기 */
+.speaker-time .talk-title {
+display: none;
+}
+/* 대신 dataset.talk 값으로 강의제목을 info 아래에 뿌려주기 */
+.speaker-card::after {
+content: attr(data-talk);
+display: block;
+width: 100%;
+margin: 0.5rem 0 0;       /* 이름/소속 아래 여백 */
+font-size: 0.9rem;
+color: #fff;              /* 배경 어두우면 흰 글씨 */
+}
 
+/* 3) 데스크톱(>768px) 레이아웃 유지 */
+@media (min-width: 769px) {
+  .speaker-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    position: relative;
+  }
+  .speaker-card .speaker-info { /* 왼쪽 정보 */
+    grid-column: 1;
+  }
+  .speaker-card .speaker-time { /* 오른쪽 시간/제목 */
+    grid-column: 3;
+    position: static;
+    text-align: right;
+  }
+}
+         
 /* 질문 카드 */
 .q-card {
 border-radius: 16px;
@@ -145,6 +188,8 @@ z-index: 1000;
 
 /* 각 요소 풀폭, 마지막 버튼 아래 여백 없애기 */
 .q-input-container .inp,
+.q-input-container .btn{width:100%;margin:0}
+.q-list{padding-bottom:6rem}
 .q-input-container .btn {
 width: 100%;
 margin: 0;
